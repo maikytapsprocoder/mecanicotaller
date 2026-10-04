@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de Taller.</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .nav-link.active { background-color: #eff6ff; color: #2563eb; font-weight: 600; border-right: 4px solid #2563eb; }
+        .nav-link { border-right: 4px solid transparent; }
+        
+        /* Modal Animation */
+        .modal-enter { opacity: 0; transform: scale(0.95); }
+        .modal-enter-active { opacity: 1; transform: scale(1); transition: opacity 200ms ease-out, transform 200ms ease-out; }
+        .modal-exit { opacity: 1; transform: scale(1); }
+        .modal-exit-active { opacity: 0; transform: scale(0.95); transition: opacity 150ms ease-in, transform 150ms ease-in; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased h-screen overflow-hidden flex flex-col md:flex-row">
+
+    <!-- Mobile Header -->
+    <header class="md:hidden bg-slate-900 text-white p-4 flex justify-between items-center shadow-md z-20">
+        <div class="flex items-center gap-2">
+            <i class="fa-solid fa-wrench text-blue-400"></i>
+            <span class="font-bold text-lg">AutoGestión Pro</span>
+        </div>
+        <button id="mobileMenuBtn" class="text-gray-300 hover:text-white focus:outline-none">
+            <i class="fa-solid fa-bars text-2xl"></i>
+        </button>
+    </header>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="bg-white w-full md:w-64 h-full shadow-lg border-r border-gray-200 flex-shrink-0 absolute md:relative z-10 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col">
+        <div class="p-6 hidden md:flex items-center gap-3 border-b border-gray-100">
+            <div class="bg-blue-600 p-2.5 rounded-lg shadow-sm">
+                <i class="fa-solid fa-wrench text-white"></i>
+            </div>
+            <span class="font-bold text-xl tracking-tight text-slate-800">Gestor de Taller</span>
+        </div>
+
+        <nav class="flex-grow py-4 flex flex-col gap-1 overflow-y-auto">
+            <button onclick="navigate('inicio')" id="nav-inicio" class="nav-link active flex items-center gap-3 px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition-colors text-left w-full">
+                <i class="fa-solid fa-house w-5 text-center"></i>
+                <span>Inicio / Menú</span>
+            </button>
+            <button onclick="navigate('equipos')" id="nav-equipos" class="nav-link flex items-center gap-3 px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition-colors text-left w-full">
+                <i class="fa-solid fa-car-side w-5 text-center"></i>
+                <span>Gestión de Equipos</span>
+            </button>
+            <button onclick="navigate('clientes')" id="nav-clientes" class="nav-link flex items-center gap-3 px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition-colors text-left w-full">
+                <i class="fa-solid fa-users w-5 text-center"></i>
+                <span>Directorio Clientes</span>
+            </button>
+            <button onclick="navigate('proveedores')" id="nav-proveedores" class="nav-link flex items-center gap-3 px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition-colors text-left w-full">
+                <i class="fa-solid fa-boxes-packing w-5 text-center"></i>
+                <span>Proveedores</span>
+            </button>
+            <div class="my-2 border-t border-gray-100"></div>
+            <button onclick="navigate('respaldo')" id="nav-respaldo" class="nav-link flex items-center gap-3 px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition-colors text-left w-full">
+                <i class="fa-solid fa-database w-5 text-center"></i>
+                <span>Respaldo / Config.</span>
+            </button>
+        </nav>
+        
+        <div class="p-4 border-t border-gray-200 text-xs text-gray-400 text-center">
+            V 2.1 - LocalHost
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 h-full overflow-y-auto relative w-full bg-slate-50/50 p-4 md:p-8">
+        
+        <!-- ================= VIEW: INICIO ================= -->
+        <div id="view-inicio" class="view-section animate-fade-in block">
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-gray-800">Bienvenido, Luis</h1>
+                <p class="text-gray-500 mt-2">Selecciona un módulo para comenzar a trabajar.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Card Equipos -->
+                <button onclick="navigate('equipos')" class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 flex flex-col items-center justify-center text-center hover:shadow-md hover:border-blue-300 transition-all group">
+                    <div class="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-car-side text-2xl text-blue-600"></i>
+                    </div>
+                    <h2 class="text-lg font-bold text-gray-800 mb-1">Equipos en Taller</h2>
+                    <p class="text-sm text-gray-500">Registra y revisa estados de reparación.</p>
+                </button>
+
+                <!-- Card Clientes -->
+                <button onclick="navigate('clientes')" class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 flex flex-col items-center justify-center text-center hover:shadow-md hover:indigo-300 transition-all group">
+                    <div class="w-16 h-16 rounded-full bg-indigo-50 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-users text-2xl text-indigo-600"></i>
+                    </div>
+                    <h2 class="text-lg font-bold text-gray-800 mb-1">Directorio de Clientes</h2>
+                    <p class="text-sm text-gray-500">Maneja la información de tus clientes.</p>
+                </button>
+
+                <!-- Card Proveedores -->
+                <button onclick="navigate('proveedores')" class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 flex flex-col items-center justify-center text-center hover:shadow-md hover:border-emerald-300 transition-all group">
+                    <div class="w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-boxes-packing text-2xl text-emerald-600"></i>
+                    </div>
+                    <h2 class="text-lg font-bold text-gray-800 mb-1">Proveedores</h2>
+                    <p class="text-sm text-gray-500">Catálogo de distribuidores de repuestos.</p>
+                </button>
+
+                <!-- Card Respaldo -->
+                <button onclick="navigate('respaldo')" class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 flex flex-col items-center justify-center text-center hover:shadow-md hover:border-orange-300 transition-all group">
+                    <div class="w-16 h-16 rounded-full bg-orange-50 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-database text-2xl text-orange-600"></i>
+                    </div>
+                    <h2 class="text-lg font-bold text-gray-800 mb-1">Respaldo de Datos</h2>
+                    <p class="text-sm text-gray-500">Descarga o importa tu lista de Clientes, Proveedores y Equipos.</p>
+                </button>
+            </div>
+            
+            <!-- Quick Stats in Home -->
+            <div class="mt-12 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h3 class="font-bold text-gray-800 mb-4 border-b pb-2">Resumen Rápido</h3>
+                <div class="grid grid-cols-3 text-center divide-x divide-gray-100">
+                    <div>
+                        <p class="text-3xl font-bold text-blue-600" id="home-stat-equipos">0</p>
+                        <p class="text-sm text-gray-500 mt-1">Equipos Ingresados</p>
+                    </div>
+                    <div>
+                        <p class="text-3xl font-bold text-indigo-600" id="home-stat-clientes">0</p>
+                        <p class="text-sm text-gray-500 mt-1">Clientes Registrados</p>
+                    </div>
+                    <div>
+                        <p class="text-3xl font-bold text-emerald-600" id="home-stat-proveedores">0</p>
+                        <p class="text-sm text-gray-500 mt-1">Proveedores</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= VIEW: EQUIPOS ================= -->
+        <div id="view-equipos" class="view-section hidden animate-fade-in">
+            <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800">Equipos en Taller</h1>
+                    <p class="text-gray-500 text-sm mt-1">Administra las reparaciones y estados.</p>
+                </div>
+            </div>
+
+            <!-- Dashboard Stats -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <div class="bg-white rounded-xl shadow-sm p-4 border border-gray-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-gray-500 uppercase">Total</p>
+                        <p class="text-2xl font-bold text-gray-800" id="stat-total">0</p>
+                    </div>
+                    <div class="bg-blue-50 text-blue-600 p-2.5 rounded-lg text-lg"><i class="fa-solid fa-car"></i></div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm p-4 border border-gray-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-gray-500 uppercase">No Revisados</p>
+                        <p class="text-2xl font-bold text-gray-800" id="stat-norevisado">0</p>
+                    </div>
+                    <div class="bg-red-50 text-red-600 p-2.5 rounded-lg text-lg"><i class="fa-solid fa-clipboard-question"></i></div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm p-4 border border-gray-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-gray-500 uppercase">En Espera</p>
+                        <p class="text-2xl font-bold text-gray-800" id="stat-espera">0</p>
+                    </div>
+                    <div class="bg-orange-50 text-orange-600 p-2.5 rounded-lg text-lg"><i class="fa-solid fa-clock"></i></div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm p-4 border border-gray-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-gray-500 uppercase">Arreglados</p>
+                        <p class="text-2xl font-bold text-gray-800" id="stat-arreglado">0</p>
+                    </div>
+                    <div class="bg-green-50 text-green-600 p-2.5 rounded-lg text-lg"><i class="fa-solid fa-check-circle"></i></div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Form Column -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 sticky top-4">
+                        <div class="px-5 py-4 border-b border-gray-100"><h2 class="font-semibold text-gray-800">Nuevo Ingreso</h2></div>
+                        <form id="equipoForm" class="p-5 space-y-4">
+                            <div><label class="block text-xs font-medium text-gray-700 mb-1">Dueño *</label><input type="text" id="eq-owner" required class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500 outline-none"></div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div><label class="block text-xs font-medium text-gray-700 mb-1">Equipo *</label><input type="text" id="eq-type" required class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
+                                <div><label class="block text-xs font-medium text-gray-700 mb-1">Matrícula *</label><input type="text" id="eq-plate" required class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm uppercase focus:ring-blue-500 outline-none"></div>
+                            </div>
+                            <div><label class="block text-xs font-medium text-gray-700 mb-1">Falla *</label><input type="text" id="eq-fault" required class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
+                            <div><label class="block text-xs font-medium text-gray-700 mb-1">Repuesto (Opcional)</label><input type="text" id="eq-part" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
+                            <div><label class="block text-xs font-medium text-gray-700 mb-1">Descripción</label><textarea id="eq-desc" rows="2" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></textarea></div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div><label class="block text-xs font-medium text-gray-700 mb-1">Costo ($)</label><input type="number" id="eq-cost" min="0" step="0.01" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none" value="0"></div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Estado</label>
+                                    <select id="eq-status" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none">
+                                        <option value="No revisado">No revisado</option>
+                                        <option value="Esperando repuestos">Esperando repuestos</option>
+                                        <option value="Arreglado">Arreglado</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <!-- Cálculo del monto a pagar -->
+                            <div class="rounded-lg border border-blue-100 bg-blue-50/50 p-3 space-y-3">
+                                <p class="text-xs font-semibold text-blue-700 uppercase tracking-wide">Cálculo del monto a pagar</p>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div class="col-span-2"><label class="block text-xs font-medium text-gray-700 mb-1">Costo de repuestos ($)</label><input type="text" id="eq-parts" autocomplete="off" placeholder="Ej: Pistón 100, Válvula 240, Motor 1500" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"><p id="eq-parts-sum" class="text-xs font-medium text-blue-700 mt-1">Suma de repuestos: $0.00</p><p class="text-xs text-gray-500">Escriba cada repuesto con su precio, separados por coma. El programa suma los números.</p></div>
+                                    <div class="col-span-2"><label class="block text-xs font-medium text-gray-700 mb-1">Mano de obra ($)</label><input type="number" id="eq-labor" min="0" step="0.01" value="0" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">% del total</label>
+                                    <select id="eq-pct" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none bg-white"><option value="10">10%</option><option value="20">20%</option><option value="30">30%</option><option value="40">40%</option><option value="50">50%</option><option value="60">60%</option><option value="70">70%</option><option value="80">80%</option><option value="90">90%</option><option value="100">100%</option></select>
+                                </div>
+                                <button type="button" onclick="calcularMonto('eq')" class="w-full bg-slate-800 hover:bg-slate-900 text-white text-sm font-medium py-2 rounded-md transition duration-200 flex items-center justify-center gap-2"><i class="fa-solid fa-calculator"></i> Calcular Monto</button>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Monto a pagar ($)</label>
+                                    <input type="number" id="eq-payment" readonly value="0" class="w-full rounded-md border-gray-300 border bg-white px-3 py-2 text-sm font-bold text-emerald-700 outline-none cursor-default">
+                                </div>
+                            </div>
+                            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-md transition duration-200">Guardar Equipo</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- List Column -->
+                <div class="lg:col-span-2 flex flex-col h-full">
+                    <div class="flex justify-between items-center mb-3">
+                        <h2 class="font-semibold text-gray-800">Directorio de Reparaciones</h2>
+                        <div class="flex gap-2 flex-wrap justify-end">
+                            <select id="eq-status-filter" class="rounded-md border-gray-300 border px-2 py-1 text-sm bg-white cursor-pointer outline-none">
+                                <option value="">Todos los estados</option>
+                                <option value="No revisado">No revisado</option>
+                                <option value="Esperando repuestos">Esperando repuestos</option>
+                                <option value="Arreglado">Arreglado</option>
+                            </select>
+                            <select id="eq-sort" class="rounded-md border-gray-300 border px-2 py-1 text-sm bg-white cursor-pointer outline-none">
+                                <option value="date-desc">Más recientes primero</option>
+                                <option value="date-asc">Más antiguos primero</option>
+                                <option value="name-asc">Dueño (A - Z)</option>
+                                <option value="name-desc">Dueño (Z - A)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="relative mb-4">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
+                        <input type="search" id="eq-search" placeholder="Buscar por nombre del dueño o matrícula..." autocomplete="off" class="w-full rounded-md border-gray-300 border pl-9 pr-3 py-2 text-sm bg-white focus:ring-blue-500 focus:border-blue-500 outline-none">
+                    </div>
+                    <div id="equiposList" class="space-y-4 overflow-y-auto pb-10">
+                        <!-- Cards injected by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= VIEW: CLIENTES ================= -->
+        <div id="view-clientes" class="view-section hidden animate-fade-in">
+            <div class="mb-6">
+                <h1 class="text-2xl font-bold text-gray-800">Directorio de Clientes</h1>
+                <p class="text-gray-500 text-sm mt-1">Gestiona los datos de contacto de tus clientes frecuentes.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 sticky top-4">
+                        <div class="px-5 py-4 border-b border-gray-100"><h2 class="font-semibold text-gray-800">Nuevo Cliente</h2></div>
+                        <form id="clienteForm" class="p-5 space-y-4">
+                            <div><label class="block text-xs font-medium text-gray-700 mb-1">Nombre Completo *</label><input type="text" id="cl-name" required class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none"></div>
+                            <div><label class="block text-xs font-medium text-gray-700 mb-1">Teléfono *</label><input type="text" id="cl-phone" required class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none"></div>
+                            <div><label class="block text-xs font-medium text-gray-700 mb-1">Email</label><input type="email" id="cl-email" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none"></div>
+                            <div><label class="block text-xs font-medium text-gray-700 mb-1">Dirección</label><input type="text" id="cl-address" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none"></div>
+                            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-md transition duration-200">Agregar Cliente</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="lg:col-span-2">
+                    <div class="relative mb-4">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
+                        <input type="search" id="cl-search" placeholder="Buscar cliente por nombre o teléfono..." autocomplete="off" class="w-full rounded-md border-gray-300 border pl-9 pr-3 py-2 text-sm bg-white focus:ring-indigo-500 focus:border-indigo-500 outline-none">
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pb-10" id="clientesList">
+                        <!-- Cards injected by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= VIEW: PROVEEDORES ================= -->
+        <div id="view-proveedores" class="view-section hidden animate-fade-in">
+            <div class="mb-6">
+                <h1 class="text-2xl font-bold text-gray-800">Proveedores de Repuestos</h1>
+                <p class="text-gray-500 text-sm mt-1">Maneja tu red de abastecimiento y contactos comerciales.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 sticky top-4">
+                        <div class="px-5 py-4 border-b border-gray-100"><h2 class="font-semibold text-gray-800">Nuevo Proveedor</h2></div>
+                        <form id="proveedorForm" class="p-5 space-y-4">
+                            <div><label class="block text-xs font-medium text-gray-700 mb-1">Empresa / Nombre *</label><input type="text" id="pr-name" required class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none"></div>
+                            <div><label class="block text-xs font-medium text-gray-700 mb-1">Persona de Contacto</label><input type="text" id="pr-contact" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none"></div>
+                            <div><label class="block text-xs font-medium text-gray-700 mb-1">Teléfono *</label><input type="text" id="pr-phone" required class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none"></div>
+                            <div><label class="block text-xs font-medium text-gray-700 mb-1">Tipo de Repuestos / Insumos</label><input type="text" id="pr-type" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none" placeholder="Ej. Filtros, Aceites, Chapa"></div>
+                            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 rounded-md transition duration-200">Agregar Proveedor</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="lg:col-span-2">
+                    <div class="flex flex-col sm:flex-row gap-2 mb-4">
+                        <div class="relative flex-grow">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
+                            <input type="search" id="pr-search" placeholder="Buscar por empresa, contacto, teléfono o repuesto..." autocomplete="off" class="w-full rounded-md border-gray-300 border pl-9 pr-3 py-2 text-sm bg-white focus:ring-emerald-500 focus:border-emerald-500 outline-none">
+                        </div>
+                        <select id="pr-type-filter" class="rounded-md border-gray-300 border px-3 py-2 text-sm bg-white cursor-pointer outline-none focus:ring-emerald-500 focus:border-emerald-500"><option value="">Todos los repuestos</option></select>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pb-10" id="proveedoresList">
+                        <!-- Cards injected by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= VIEW: RESPALDO ================= -->
+        <div id="view-respaldo" class="view-section hidden animate-fade-in">
+            <div class="mb-6">
+                <h1 class="text-2xl font-bold text-gray-800">Respaldo y Configuración</h1>
+                <p class="text-gray-500 text-sm mt-1">Protege tu información. Exporta tus datos para guardarlos de forma segura, o impórtalos si cambias de dispositivo.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl">
+                <!-- EXPORT -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col justify-between">
+                    <div>
+                        <div class="bg-blue-100 text-blue-600 w-12 h-12 rounded-full flex items-center justify-center text-xl mb-4"><i class="fa-solid fa-download"></i></div>
+                        <h2 class="text-lg font-bold text-gray-800 mb-2">Exportar Datos</h2>
+                        <p class="text-sm text-gray-600 mb-6">Descarga un archivo plano (JSON) que contiene todos los registros de Equipos, Clientes y Proveedores guardados actualmente.</p>
+                    </div>
+                    <button onclick="exportarDatos()" class="w-full flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-900 text-white font-medium py-3 px-4 rounded-lg transition duration-200 shadow-sm hover:shadow-md">
+                        <i class="fa-solid fa-file-export"></i> Descargar Respaldo (.json)
+                    </button>
+                </div>
+
+                <!-- IMPORT -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col justify-between">
+                    <div>
+                        <div class="bg-orange-100 text-orange-600 w-12 h-12 rounded-full flex items-center justify-center text-xl mb-4"><i class="fa-solid fa-upload"></i></div>
+                        <h2 class="text-lg font-bold text-gray-800 mb-2">Importar Datos</h2>
+                        <p class="text-sm text-gray-600 mb-4">Selecciona un archivo <code>.json</code> previamente descargado para restaurar tu base de datos. <span class="font-semibold text-red-600">¡Advertencia: Esto reemplazará los datos actuales!</span></p>
+                        
+                        <input type="file" id="importFile" accept=".json" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100 mb-4 cursor-pointer outline-none">
+                    </div>
+                    <button onclick="importarDatos()" class="w-full flex items-center justify-center gap-2 bg-orange-600 hover:bg-orange-700 text-white font-medium py-3 px-4 rounded-lg transition duration-200 shadow-sm hover:shadow-md">
+                        <i class="fa-solid fa-database"></i> Restaurar desde Archivo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ================= EDIT MODAL OVERLAY ================= -->
+    <div id="modal-overlay" class="fixed inset-0 bg-black/60 hidden z-50 flex items-center justify-center backdrop-blur-sm transition-opacity duration-300 opacity-0 p-4">
+        <div id="modal-content" class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-auto overflow-hidden transform scale-95 transition-transform duration-300 flex flex-col max-h-full">
+            
+            <!-- Modal Header -->
+            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2" id="modal-title">
+                    <i class="fa-solid fa-pen-to-square text-blue-600"></i> Editar Registro
+                </h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-red-500 transition-colors focus:outline-none bg-gray-200 hover:bg-red-100 w-8 h-8 rounded-full flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <!-- Modal Body (Scrollable if needed) -->
+            <div class="p-6 overflow-y-auto">
+                
+                <!-- EDIT FORM: EQUIPOS -->
+                <form id="editForm-equipos" class="hidden space-y-4" onsubmit="saveEdit(event, 'equipos')">
+                    <div><label class="block text-xs font-medium text-gray-700 mb-1">Dueño *</label><input type="text" id="edit-eq-owner" required class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div><label class="block text-xs font-medium text-gray-700 mb-1">Equipo *</label><input type="text" id="edit-eq-type" required class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
+                        <div><label class="block text-xs font-medium text-gray-700 mb-1">Matrícula *</label><input type="text" id="edit-eq-plate" required class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm uppercase focus:ring-blue-500 outline-none"></div>
+                    </div>
+                    <div><label class="block text-xs font-medium text-gray-700 mb-1">Falla *</label><input type="text" id="edit-eq-fault" required class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
+                    <div><label class="block text-xs font-medium text-gray-700 mb-1">Repuesto (Opcional)</label><input type="text" id="edit-eq-part" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
+                    <div><label class="block text-xs font-medium text-gray-700 mb-1">Descripción</label><textarea id="edit-eq-desc" rows="2" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></textarea></div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div><label class="block text-xs font-medium text-gray-700 mb-1">Costo ($)</label><input type="number" id="edit-eq-cost" min="0" step="0.01" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">Estado</label>
+                            <select id="edit-eq-status" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none">
+                                <option value="No revisado">No revisado</option>
+                                <option value="Esperando repuestos">Esperando repuestos</option>
+                                <option value="Arreglado">Arreglado</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- Cálculo del monto a pagar -->
+                    <div class="rounded-lg border border-blue-100 bg-blue-50/50 p-3 space-y-3">
+                        <p class="text-xs font-semibold text-blue-700 uppercase tracking-wide">Cálculo del monto a pagar</p>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="col-span-2"><label class="block text-xs font-medium text-gray-700 mb-1">Costo de repuestos ($)</label><input type="text" id="edit-eq-parts" autocomplete="off" placeholder="Ej: Pistón 100, Válvula 240, Motor 1500" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"><p id="edit-eq-parts-sum" class="text-xs font-medium text-blue-700 mt-1">Suma de repuestos: $0.00</p><p class="text-xs text-gray-500">Escriba cada repuesto con su precio, separados por coma. El programa suma los números.</p></div>
+                            <div class="col-span-2"><label class="block text-xs font-medium text-gray-700 mb-1">Mano de obra ($)</label><input type="number" id="edit-eq-labor" min="0" step="0.01" value="0" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">% del total</label>
+                            <select id="edit-eq-pct" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none bg-white"><option value="10">10%</option><option value="20">20%</option><option value="30">30%</option><option value="40">40%</option><option value="50">50%</option><option value="60">60%</option><option value="70">70%</option><option value="80">80%</option><option value="90">90%</option><option value="100">100%</option></select>
+                        </div>
+                        <button type="button" onclick="calcularMonto('edit-eq')" class="w-full bg-slate-800 hover:bg-slate-900 text-white text-sm font-medium py-2 rounded-md transition duration-200 flex items-center justify-center gap-2"><i class="fa-solid fa-calculator"></i> Calcular Monto</button>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">Monto a pagar ($)</label>
+                            <input type="number" id="edit-eq-payment" readonly value="0" class="w-full rounded-md border-gray-300 border bg-white px-3 py-2 text-sm font-bold text-emerald-700 outline-none cursor-default">
+                        </div>
+                    </div>
+                    <div class="pt-4 border-t border-gray-100 flex justify-end gap-3 mt-4">
+                        <button type="button" onclick="closeModal()" class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 transition">Cancelar</button>
+                        <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition shadow-sm">Guardar Cambios</button>
+                    </div>
+                </form>
+
+                <!-- EDIT FORM: CLIENTES -->
+                <form id="editForm-clientes" class="hidden space-y-4" onsubmit="saveEdit(event, 'clientes')">
+                    <div><label class="block text-xs font-medium text-gray-700 mb-1">Nombre Completo *</label><input type="text" id="edit-cl-name" required class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none focus:ring-indigo-500"></div>
+                    <div><label class="block text-xs font-medium text-gray-700 mb-1">Teléfono *</label><input type="text" id="edit-cl-phone" required class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none focus:ring-indigo-500"></div>
+                    <div><label class="block text-xs font-medium text-gray-700 mb-1">Email</label><input type="email" id="edit-cl-email" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none focus:ring-indigo-500"></div>
+                    <div><label class="block text-xs font-medium text-gray-700 mb-1">Dirección</label><input type="text" id="edit-cl-address" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none focus:ring-indigo-500"></div>
+                    <div class="pt-4 border-t border-gray-100 flex justify-end gap-3 mt-4">
+                        <button type="button" onclick="closeModal()" class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 transition">Cancelar</button>
+                        <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 transition shadow-sm">Guardar Cambios</button>
+                    </div>
+                </form>
+
+                <!-- EDIT FORM: PROVEEDORES -->
+                <form id="editForm-proveedores" class="hidden space-y-4" onsubmit="saveEdit(event, 'proveedores')">
+                    <div><label class="block text-xs font-medium text-gray-700 mb-1">Empresa / Nombre *</label><input type="text" id="edit-pr-name" required class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none focus:ring-emerald-500"></div>
+                    <div><label class="block text-xs font-medium text-gray-700 mb-1">Persona de Contacto</label><input type="text" id="edit-pr-contact" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none focus:ring-emerald-500"></div>
+                    <div><label class="block text-xs font-medium text-gray-700 mb-1">Teléfono *</label><input type="text" id="edit-pr-phone" required class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none focus:ring-emerald-500"></div>
+                    <div><label class="block text-xs font-medium text-gray-700 mb-1">Tipo de Repuestos / Insumos</label><input type="text" id="edit-pr-type" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none focus:ring-emerald-500"></div>
+                    <div class="pt-4 border-t border-gray-100 flex justify-end gap-3 mt-4">
+                        <button type="button" onclick="closeModal()" class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 transition">Cancelar</button>
+                        <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-emerald-600 rounded-md hover:bg-emerald-700 transition shadow-sm">Guardar Cambios</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup: agregar cliente al directorio al registrar un equipo -->
+    <div id="client-prompt-overlay" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center backdrop-blur-sm p-4" style="z-index:60">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-auto overflow-hidden max-h-full overflow-y-auto">
+            <div id="cp-step-ask" class="p-6 text-center">
+                <div class="mx-auto w-14 h-14 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-2xl mb-4"><i class="fa-solid fa-user-plus"></i></div>
+                <h3 class="text-lg font-bold text-gray-800 mb-2">¿Desea agregar este cliente al Directorio de Clientes?</h3>
+                <p class="text-sm text-gray-600 mb-6"><b id="cp-owner-label"></b> todavía no figura en el directorio.</p>
+                <div class="flex gap-3 justify-center">
+                    <button type="button" onclick="closeClientPrompt()" class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 transition">No, gracias</button>
+                    <button type="button" onclick="showClientPromptForm()" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 transition shadow-sm">Sí, agregar</button>
+                </div>
+            </div>
+            <form id="cp-step-form" class="hidden p-6 space-y-4" onsubmit="saveClientPrompt(event)">
+                <h3 class="text-lg font-bold text-gray-800"><i class="fa-solid fa-user-plus text-indigo-600 mr-1"></i> Nuevo Cliente</h3>
+                <div><label class="block text-xs font-medium text-gray-700 mb-1">Nombre Completo *</label><input type="text" id="cp-name" required class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none focus:ring-indigo-500"></div>
+                <div><label class="block text-xs font-medium text-gray-700 mb-1">Teléfono *</label><input type="text" id="cp-phone" required class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none focus:ring-indigo-500"></div>
+                <div><label class="block text-xs font-medium text-gray-700 mb-1">Email</label><input type="email" id="cp-email" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none focus:ring-indigo-500"></div>
+                <div><label class="block text-xs font-medium text-gray-700 mb-1">Dirección</label><input type="text" id="cp-address" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none focus:ring-indigo-500"></div>
+                <div class="pt-4 border-t border-gray-100 flex justify-end gap-3">
+                    <button type="button" onclick="closeClientPrompt()" class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 transition">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 transition shadow-sm">Agregar Cliente</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <script>
+        // Constants & DB Keys
+        const KEYS = {
+            equipos: 'taller_equipos',
+            clientes: 'taller_clientes',
+            proveedores: 'taller_proveedores'
+        };
+
+        // Global State
+        let db = { equipos: [], clientes: [], proveedores: [] };
+        
+        // Modal State
+        let currentEditId = null;
+        let currentEditType = null;
+
+        // Configuration for Equipment status
+        const statusConf = {
+            'No revisado': 'bg-red-100 text-red-800 border-red-200',
+            'Esperando repuestos': 'bg-orange-100 text-orange-800 border-orange-200',
+            'Arreglado': 'bg-green-100 text-green-800 border-green-200'
+        };
+
+        // --- Core Application Logic ---
+        function init() {
+            loadAllData();
+            setupEventListeners();
+            updateAllViews();
+            
+            // Mobile Menu Toggle
+            const mobileBtn = document.getElementById('mobileMenuBtn');
+            const sidebar = document.getElementById('sidebar');
+            mobileBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('-translate-x-full');
+            });
+        }
+
+        function loadAllData() {
+            db.equipos = JSON.parse(localStorage.getItem(KEYS.equipos)) || [];
+            db.clientes = JSON.parse(localStorage.getItem(KEYS.clientes)) || [];
+            db.proveedores = JSON.parse(localStorage.getItem(KEYS.proveedores)) || [];
+        }
+
+        function saveData(key, dataArray) {
+            localStorage.setItem(key, JSON.stringify(dataArray));
+            if (window.cloudPush) window.cloudPush(key, dataArray);
+        }
+
+        function updateAllViews() {
+            renderEquipos();
+            renderClientes();
+            renderProveedores();
+            updateHomeStats();
+        }
+
+        function updateHomeStats() {
+            document.getElementById('home-stat-equipos').textContent = db.equipos.length;
+            document.getElementById('home-stat-clientes').textContent = db.clientes.length;
+            document.getElementById('home-stat-proveedores').textContent = db.proveedores.length;
+        }
+
+        // --- Navigation ---
+        function navigate(viewName) {
+            // Hide all views
+            document.querySelectorAll('.view-section').forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('block');
+            });
+            // Remove active classes
+            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+            
+            // Show target view and set active
+            const targetView = document.getElementById(`view-${viewName}`);
+            targetView.classList.remove('hidden');
+            targetView.classList.add('block');
+            document.getElementById(`nav-${viewName}`).classList.add('active');
+
+            // Close mobile menu if open
+            if(window.innerWidth < 768) {
+                document.getElementById('sidebar').classList.add('-translate-x-full');
+            }
+        }
+
+        // --- Custom Toast Notification ---
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            const baseClass = "px-4 py-3 rounded-lg shadow-lg text-white font-medium flex items-center gap-2 transform transition-all duration-300 translate-y-10 opacity-0 pointer-events-auto";
+            const colorClass = type === 'success' ? 'bg-emerald-600' : (type === 'error' ? 'bg-red-600' : 'bg-blue-600');
+            const icon = type === 'success' ? 'fa-check-circle' : (type === 'error' ? 'fa-circle-exclamation' : 'fa-info-circle');
+            
+            toast.className = `${baseClass} ${colorClass}`;
+            toast.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${escapeHTML(message)}</span>`;
+            
+            container.appendChild(toast);
+            
+            // Animate In
+            setTimeout(() => {
+                toast.classList.remove('translate-y-10', 'opacity-0');
+            }, 10);
+
+            // Remove after 3.5s
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        // --- Búsqueda: ignora mayúsculas y acentos ---
+        function normalizeText(str) {
+            return String(str || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+        }
+
+        // Coincidencia de teléfono: compara solo dígitos, así "099123" encuentra "099 123 456" o "099-123-456"
+        function phoneMatches(phone, rawQuery) {
+            const qDigits = String(rawQuery || '').replace(/\D/g, '');
+            if (!qDigits) return false;
+            return String(phone || '').replace(/\D/g, '').includes(qDigits);
+        }
+
+        function noResultsHTML() {
+            return '<div class="col-span-full text-center py-10 bg-white rounded-xl border border-dashed border-gray-300 text-gray-400"><i class="fa-solid fa-magnifying-glass text-4xl mb-3 text-gray-300"></i><p>No se encontraron resultados para tu búsqueda</p></div>';
+        }
+
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>'"]/g, tag => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+            }[tag] || tag));
+        }
+
+        // ================= MODAL LOGIC (EDIT) =================
+        function openEditModal(type, id) {
+            currentEditId = id;
+            currentEditType = type;
+            const item = db[type].find(i => i.id === id);
+            if(!item) return;
+
+            // Hide all forms
+            document.getElementById('editForm-equipos').classList.add('hidden');
+            document.getElementById('editForm-clientes').classList.add('hidden');
+            document.getElementById('editForm-proveedores').classList.add('hidden');
+
+            // Define Title and show relevant form
+            let titleText = "Editar Registro";
+            if (type === 'equipos') {
+                titleText = "Editar Equipo";
+                document.getElementById('editForm-equipos').classList.remove('hidden');
+                document.getElementById('edit-eq-owner').value = item.owner;
+                document.getElementById('edit-eq-type').value = item.type;
+                document.getElementById('edit-eq-plate').value = item.plate;
+                document.getElementById('edit-eq-fault').value = item.fault;
+                document.getElementById('edit-eq-part').value = item.part;
+                document.getElementById('edit-eq-desc').value = item.desc;
+                document.getElementById('edit-eq-cost').value = item.cost;
+                document.getElementById('edit-eq-parts').value = item.partsText || (item.partsCost ? String(item.partsCost) : '');
+                updatePartsSum('edit-eq');
+                document.getElementById('edit-eq-labor').value = item.labor || 0;
+                document.getElementById('edit-eq-pct').value = item.pct || 10;
+                document.getElementById('edit-eq-payment').value = Number(item.payment || 0).toFixed(2);
+                document.getElementById('edit-eq-status').value = item.status;
+            } else if (type === 'clientes') {
+                titleText = "Editar Cliente";
+                document.getElementById('editForm-clientes').classList.remove('hidden');
+                document.getElementById('edit-cl-name').value = item.name;
+                document.getElementById('edit-cl-phone').value = item.phone;
+                document.getElementById('edit-cl-email').value = item.email;
+                document.getElementById('edit-cl-address').value = item.address;
+            } else if (type === 'proveedores') {
+                titleText = "Editar Proveedor";
+                document.getElementById('editForm-proveedores').classList.remove('hidden');
+                document.getElementById('edit-pr-name').value = item.name;
+                document.getElementById('edit-pr-contact').value = item.contact;
+                document.getElementById('edit-pr-phone').value = item.phone;
+                document.getElementById('edit-pr-type').value = item.type;
+            }
+
+            // Update Title
+            document.getElementById('modal-title').innerHTML = `<i class="fa-solid fa-pen-to-square text-blue-600"></i> ${titleText}`;
+
+            // Show Overlay & Animate In
+            const overlay = document.getElementById('modal-overlay');
+            const content = document.getElementById('modal-content');
+            overlay.classList.remove('hidden');
+            
+            // trigger reflow
+            void overlay.offsetWidth;
+            
+            overlay.classList.remove('opacity-0');
+            content.classList.remove('scale-95');
+            content.classList.add('scale-100');
+        }
+
+        function closeModal() {
+            const overlay = document.getElementById('modal-overlay');
+            const content = document.getElementById('modal-content');
+            
+            // Animate Out
+            overlay.classList.add('opacity-0');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+                currentEditId = null;
+                currentEditType = null;
+            }, 300);
+        }
+
+        function saveEdit(e, type) {
+            e.preventDefault();
+            const index = db[type].findIndex(i => i.id === currentEditId);
+            if (index === -1) return;
+
+            if (type === 'equipos') {
+                db[type][index].owner = document.getElementById('edit-eq-owner').value.trim();
+                db[type][index].type = document.getElementById('edit-eq-type').value.trim();
+                db[type][index].plate = document.getElementById('edit-eq-plate').value.trim().toUpperCase();
+                db[type][index].fault = document.getElementById('edit-eq-fault').value.trim();
+                db[type][index].part = document.getElementById('edit-eq-part').value.trim();
+                db[type][index].desc = document.getElementById('edit-eq-desc').value.trim();
+                db[type][index].cost = parseFloat(document.getElementById('edit-eq-cost').value) || 0;
+                db[type][index].partsCost = getMontoInputs('edit-eq').parts;
+                db[type][index].partsText = document.getElementById('edit-eq-parts').value.trim();
+                db[type][index].labor = getMontoInputs('edit-eq').labor;
+                db[type][index].pct = getMontoInputs('edit-eq').pct;
+                db[type][index].payment = getMontoTotal('edit-eq');
+                db[type][index].status = document.getElementById('edit-eq-status').value;
+            } else if (type === 'clientes') {
+                db[type][index].name = document.getElementById('edit-cl-name').value.trim();
+                db[type][index].phone = document.getElementById('edit-cl-phone').value.trim();
+                db[type][index].email = document.getElementById('edit-cl-email').value.trim();
+                db[type][index].address = document.getElementById('edit-cl-address').value.trim();
+            } else if (type === 'proveedores') {
+                db[type][index].name = document.getElementById('edit-pr-name').value.trim();
+                db[type][index].contact = document.getElementById('edit-pr-contact').value.trim();
+                db[type][index].phone = document.getElementById('edit-pr-phone').value.trim();
+                db[type][index].type = document.getElementById('edit-pr-type').value.trim();
+            }
+
+            saveData(KEYS[type], db[type]);
+            updateAllViews();
+            closeModal();
+            showToast('Registro actualizado exitosamente', 'success');
+        }
+
+        // ================= EQUIPOS LOGIC =================
+        function setupEventListeners() {
+            document.getElementById('equipoForm').addEventListener('submit', handleAddEquipo);
+            document.getElementById('eq-sort').addEventListener('change', renderEquipos);
+            document.getElementById('eq-status-filter').addEventListener('change', renderEquipos);
+            document.getElementById('pr-type-filter').addEventListener('change', renderProveedores);
+            ['eq', 'edit-eq'].forEach(prefix => ['parts', 'labor', 'pct'].forEach(f =>
+                document.getElementById(`${prefix}-${f}`).addEventListener('input', () => refreshMonto(prefix))));
+            document.getElementById('eq-search').addEventListener('input', renderEquipos);
+            document.getElementById('cl-search').addEventListener('input', renderClientes);
+            document.getElementById('pr-search').addEventListener('input', renderProveedores);
+            document.getElementById('clienteForm').addEventListener('submit', handleAddCliente);
+            document.getElementById('proveedorForm').addEventListener('submit', handleAddProveedor);
+        }
+
+        function handleAddEquipo(e) {
+            e.preventDefault();
+            const newObj = {
+                id: Date.now(),
+                timestamp: Date.now(),
+                owner: document.getElementById('eq-owner').value.trim(),
+                type: document.getElementById('eq-type').value.trim(),
+                plate: document.getElementById('eq-plate').value.trim().toUpperCase(),
+                fault: document.getElementById('eq-fault').value.trim(),
+                part: document.getElementById('eq-part').value.trim(),
+                desc: document.getElementById('eq-desc').value.trim(),
+                cost: parseFloat(document.getElementById('eq-cost').value) || 0,
+                partsCost: getMontoInputs('eq').parts,
+                partsText: document.getElementById('eq-parts').value.trim(),
+                labor: getMontoInputs('eq').labor,
+                pct: getMontoInputs('eq').pct,
+                payment: getMontoTotal('eq'),
+                status: document.getElementById('eq-status').value
+            };
+            db.equipos.push(newObj);
+            saveData(KEYS.equipos, db.equipos);
+            updateAllViews();
+            e.target.reset();
+            showToast('Equipo registrado exitosamente');
+            refreshMonto('eq');
+            if (newObj.owner && !clienteExiste(newObj.owner)) openClientPrompt(newObj.owner);
+        }
+
+        function renderEquipos() {
+            const container = document.getElementById('equiposList');
+            const sortMethod = document.getElementById('eq-sort').value;
+            
+            // Stats
+            document.getElementById('stat-total').textContent = db.equipos.length;
+            document.getElementById('stat-norevisado').textContent = db.equipos.filter(e => e.status === 'No revisado').length;
+            document.getElementById('stat-espera').textContent = db.equipos.filter(e => e.status === 'Esperando repuestos').length;
+            document.getElementById('stat-arreglado').textContent = db.equipos.filter(e => e.status === 'Arreglado').length;
+
+            // Filtro por nombre del dueño o matrícula (la matrícula también coincide sin espacios ni guiones)
+            const q = normalizeText(document.getElementById('eq-search').value);
+            const qPlate = q.replace(/[\s-]/g, '');
+            let sorted = db.equipos.filter(eq => {
+                if (!q) return true;
+                const plate = normalizeText(eq.plate);
+                return normalizeText(eq.owner).includes(q) ||
+                       plate.includes(q) ||
+                       (qPlate && plate.replace(/[\s-]/g, '').includes(qPlate));
+            });
+            const statusFilter = document.getElementById('eq-status-filter').value;
+            if (statusFilter) sorted = sorted.filter(eq => eq.status === statusFilter);
+            if (sortMethod === 'date-desc') sorted.sort((a, b) => b.timestamp - a.timestamp);
+            else if (sortMethod === 'date-asc') sorted.sort((a, b) => a.timestamp - b.timestamp);
+            else if (sortMethod === 'name-asc') sorted.sort((a, b) => a.owner.localeCompare(b.owner));
+            else if (sortMethod === 'name-desc') sorted.sort((a, b) => b.owner.localeCompare(a.owner));
+
+            if (sorted.length === 0 && db.equipos.length > 0) { container.innerHTML = noResultsHTML(); return; }
+            if(sorted.length === 0) {
+                container.innerHTML = '<div class="text-center py-10 bg-white rounded-xl border border-dashed border-gray-300 text-gray-400"><i class="fa-solid fa-inbox text-4xl mb-3 text-gray-300"></i><p>No hay equipos registrados</p></div>';
+                return;
+            }
+
+            container.innerHTML = sorted.map(eq => `
+                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex flex-col hover:shadow-md transition-shadow">
+                    <div class="flex justify-between items-start flex-wrap gap-2 mb-3">
+                        <div>
+                            <h3 class="font-bold text-gray-800 text-lg">${escapeHTML(eq.owner)} <span class="text-xs bg-gray-100 border border-gray-200 px-2 py-0.5 rounded font-mono ml-2">${escapeHTML(eq.plate)}</span></h3>
+                            <p class="text-sm text-gray-500">${new Date(eq.timestamp).toLocaleDateString()} - <span class="font-medium text-gray-700">${escapeHTML(eq.type)}</span></p>
+                        </div>
+                        <select onchange="updateEqStatus(${eq.id}, this.value)" class="text-sm font-semibold rounded-full border px-3 py-1 cursor-pointer focus:outline-none ${statusConf[eq.status]} appearance-none pr-8 relative">
+                            <option value="No revisado" ${eq.status === 'No revisado' ? 'selected' : ''}>No revisado</option>
+                            <option value="Esperando repuestos" ${eq.status === 'Esperando repuestos' ? 'selected' : ''}>En espera</option>
+                            <option value="Arreglado" ${eq.status === 'Arreglado' ? 'selected' : ''}>Arreglado</option>
+                        </select>
+                    </div>
+                    <div class="text-sm bg-gray-50 p-3 rounded-lg mb-3 border border-gray-100 flex-grow">
+                        <p class="mb-1"><span class="text-gray-500 font-medium">Falla:</span> ${escapeHTML(eq.fault)}</p>
+                        ${eq.part ? `<p class="mb-1"><span class="text-gray-500 font-medium">Repuesto:</span> ${escapeHTML(eq.part)}</p>` : ''}
+                        <p class="mb-1"><span class="text-gray-500 font-medium">Costo Estimado:</span> <span class="font-bold text-gray-800">$${eq.cost.toFixed(2)}</span></p>
+                        <div class="mt-2 pt-2 border-t border-gray-200">
+                            ${(eq.partsCost || eq.labor) ? `<p class="mb-1 text-xs text-gray-600">Repuestos: <b>$${Number(eq.partsCost || 0).toFixed(2)}</b> + Mano de obra: <b>$${Number(eq.labor || 0).toFixed(2)}</b> + <b>${Number(eq.pct || 0)}%</b></p>` : ''}
+                            ${eq.partsText && /\p{L}/u.test(eq.partsText) ? `<p class="mb-1 text-xs text-gray-500">Detalle: ${escapeHTML(eq.partsText)}</p>` : ''}
+                            <p class="flex items-center justify-between"><span class="text-gray-500 font-medium">Monto a pagar:</span> <span class="font-bold text-emerald-700 text-base">$${Number(eq.payment || 0).toFixed(2)}</span></p>
+                        </div>
+                        ${eq.desc ? `<div class="mt-2 text-xs text-gray-600 italic border-l-2 border-gray-300 pl-2 py-0.5">${escapeHTML(eq.desc)}</div>` : ''}
+                    </div>
+                    
+                    <!-- Acción Footer -->
+                    <div class="pt-3 border-t border-gray-100 flex justify-end gap-2">
+                        <button onclick="openEditModal('equipos', ${eq.id})" class="px-3 py-1.5 text-sm rounded-md font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors flex items-center gap-1">
+                            <i class="fa-solid fa-pen-to-square"></i> Editar
+                        </button>
+                        <button onclick="deleteEntity('equipos', ${eq.id})" class="px-3 py-1.5 text-sm rounded-md font-medium text-red-600 bg-red-50 hover:bg-red-100 transition-colors flex items-center gap-1">
+                            <i class="fa-solid fa-trash-can"></i> Eliminar
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.updateEqStatus = function(id, newStatus) {
+            const idx = db.equipos.findIndex(e => e.id === id);
+            if (idx > -1) {
+                db.equipos[idx].status = newStatus;
+                saveData(KEYS.equipos, db.equipos);
+                updateAllViews();
+                showToast('Estado actualizado', 'success');
+            }
+        };
+
+        // --- Repuestos escritos como texto: "Pistón 100, Válvula 240, Motor 1500" suma 1840 ---
+        // Se toma el último número de cada ítem (separados por coma, ";", "+" o salto de línea). Decimales: 12.50 o 12,50
+        function sumPartsText(text) {
+            const clean = String(text || '').replace(/(\d),(\d{1,2})(?!\d)/g, '$1.$2');
+            return clean.split(/[,;+\n]+/).reduce((sum, item) => {
+                const nums = item.match(/\d+(?:\.\d+)?/g);
+                return sum + (nums ? parseFloat(nums[nums.length - 1]) : 0);
+            }, 0);
+        }
+
+        function updatePartsSum(prefix) {
+            const el = document.getElementById(`${prefix}-parts-sum`);
+            if (el) el.textContent = `Suma de repuestos: $${getMontoInputs(prefix).parts.toFixed(2)}`;
+        }
+
+        // Recalcula la suma de repuestos y el monto a pagar mientras se escribe
+        function refreshMonto(prefix) {
+            updatePartsSum(prefix);
+            const { parts, labor, pct } = getMontoInputs(prefix);
+            document.getElementById(`${prefix}-payment`).value = computePayment(parts, labor, pct).toFixed(2);
+        }
+
+        // --- Cálculo del Monto a pagar: (Repuestos + Mano de obra) + % sobre ese total ---
+        function getMontoInputs(prefix) {
+            return {
+                parts: Math.round(Math.max(0, sumPartsText(document.getElementById(`${prefix}-parts`).value)) * 100) / 100,
+                labor: Math.max(0, parseFloat(document.getElementById(`${prefix}-labor`).value) || 0),
+                pct: parseInt(document.getElementById(`${prefix}-pct`).value, 10) || 0
+            };
+        }
+
+        function computePayment(parts, labor, pct) {
+            const subtotal = parts + labor;
+            return Math.round(subtotal * (1 + pct / 100) * 100) / 100;
+        }
+
+        // Total a guardar: si hay datos de cálculo, se recalcula; si no, se conserva el monto actual (equipos antiguos)
+        function getMontoTotal(prefix) {
+            const { parts, labor, pct } = getMontoInputs(prefix);
+            if (parts + labor > 0) return computePayment(parts, labor, pct);
+            return Math.max(0, parseFloat(document.getElementById(`${prefix}-payment`).value) || 0);
+        }
+
+        window.calcularMonto = function(prefix) {
+            const { parts, labor, pct } = getMontoInputs(prefix);
+            const total = computePayment(parts, labor, pct);
+            document.getElementById(`${prefix}-payment`).value = total.toFixed(2);
+            showToast(`Monto calculado: $${total.toFixed(2)}`, 'info');
+        };
+
+        // ================= POPUP: AGREGAR CLIENTE DESDE UN EQUIPO NUEVO =================
+        function clienteExiste(name) {
+            const n = normalizeText(name);
+            return db.clientes.some(cl => normalizeText(cl.name) === n);
+        }
+
+        function openClientPrompt(ownerName) {
+            document.getElementById('cp-owner-label').textContent = ownerName;
+            document.getElementById('cp-name').value = ownerName;
+            ['cp-phone', 'cp-email', 'cp-address'].forEach(id => document.getElementById(id).value = '');
+            document.getElementById('cp-step-ask').classList.remove('hidden');
+            document.getElementById('cp-step-form').classList.add('hidden');
+            document.getElementById('client-prompt-overlay').classList.remove('hidden');
+        }
+
+        function showClientPromptForm() {
+            document.getElementById('cp-step-ask').classList.add('hidden');
+            document.getElementById('cp-step-form').classList.remove('hidden');
+            document.getElementById('cp-phone').focus();
+        }
+
+        function closeClientPrompt() {
+            document.getElementById('client-prompt-overlay').classList.add('hidden');
+        }
+
+        function saveClientPrompt(e) {
+            e.preventDefault();
+            const name = document.getElementById('cp-name').value.trim();
+            if (clienteExiste(name)) {
+                closeClientPrompt();
+                showToast('Ese cliente ya está en el directorio', 'info');
+                return;
+            }
+            db.clientes.push({
+                id: Date.now(),
+                name,
+                phone: document.getElementById('cp-phone').value.trim(),
+                email: document.getElementById('cp-email').value.trim(),
+                address: document.getElementById('cp-address').value.trim()
+            });
+            saveData(KEYS.clientes, db.clientes);
+            updateAllViews();
+            closeClientPrompt();
+            showToast('Cliente agregado al Directorio de Clientes');
+        }
+
+        // ================= CLIENTES LOGIC =================
+        function handleAddCliente(e) {
+            e.preventDefault();
+            db.clientes.push({
+                id: Date.now(),
+                name: document.getElementById('cl-name').value.trim(),
+                phone: document.getElementById('cl-phone').value.trim(),
+                email: document.getElementById('cl-email').value.trim(),
+                address: document.getElementById('cl-address').value.trim()
+            });
+            saveData(KEYS.clientes, db.clientes);
+            updateAllViews();
+            e.target.reset();
+            showToast('Cliente guardado exitosamente');
+        }
+
+        function renderClientes() {
+            const container = document.getElementById('clientesList');
+            if(db.clientes.length === 0) {
+                container.innerHTML = '<div class="col-span-full text-center py-10 bg-white rounded-xl border border-dashed border-gray-300 text-gray-400"><i class="fa-solid fa-users-slash text-4xl mb-3 text-gray-300"></i><p>No hay clientes registrados</p></div>';
+                return;
+            }
+            const rawQ = document.getElementById('cl-search').value;
+            const q = normalizeText(rawQ);
+            const list = q ? db.clientes.filter(cl =>
+                normalizeText(cl.name).includes(q) ||
+                normalizeText(cl.phone).includes(q) ||
+                phoneMatches(cl.phone, rawQ)
+            ) : db.clientes;
+            if (list.length === 0) { container.innerHTML = noResultsHTML(); return; }
+            container.innerHTML = list.map(cl => `
+                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex flex-col hover:shadow-md transition-shadow">
+                    <div class="flex-grow">
+                        <h3 class="font-bold text-indigo-700 mb-2 text-lg"><i class="fa-solid fa-user mr-1 text-indigo-400"></i> ${escapeHTML(cl.name)}</h3>
+                        <p class="text-sm text-gray-600 mb-1 flex items-center gap-2"><i class="fa-solid fa-phone w-4 text-center text-gray-400"></i> ${escapeHTML(cl.phone)}</p>
+                        ${cl.email ? `<p class="text-sm text-gray-600 mb-1 flex items-center gap-2"><i class="fa-solid fa-envelope w-4 text-center text-gray-400"></i> ${escapeHTML(cl.email)}</p>` : ''}
+                        ${cl.address ? `<p class="text-sm text-gray-600 flex items-center gap-2"><i class="fa-solid fa-location-dot w-4 text-center text-gray-400"></i> ${escapeHTML(cl.address)}</p>` : ''}
+                    </div>
+                    <!-- Acción Footer -->
+                    <div class="pt-3 mt-4 border-t border-gray-100 flex justify-end gap-2">
+                        <button onclick="openEditModal('clientes', ${cl.id})" class="px-3 py-1.5 text-sm rounded-md font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors flex items-center gap-1">
+                            <i class="fa-solid fa-pen-to-square"></i> Editar
+                        </button>
+                        <button onclick="deleteEntity('clientes', ${cl.id})" class="px-3 py-1.5 text-sm rounded-md font-medium text-red-600 bg-red-50 hover:bg-red-100 transition-colors flex items-center gap-1">
+                            <i class="fa-solid fa-trash-can"></i> Eliminar
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ================= PROVEEDORES LOGIC =================
+        function handleAddProveedor(e) {
+            e.preventDefault();
+            db.proveedores.push({
+                id: Date.now(),
+                name: document.getElementById('pr-name').value.trim(),
+                contact: document.getElementById('pr-contact').value.trim(),
+                phone: document.getElementById('pr-phone').value.trim(),
+                type: document.getElementById('pr-type').value.trim()
+            });
+            saveData(KEYS.proveedores, db.proveedores);
+            updateAllViews();
+            e.target.reset();
+            showToast('Proveedor guardado exitosamente');
+        }
+
+        // Cada proveedor puede ofrecer varios tipos separados por coma ("Filtros, Rulemanes")
+        function splitTipos(str) {
+            return String(str || '').split(/[,;/]+/).map(t => t.trim()).filter(Boolean);
+        }
+
+        function updateTipoFilterOptions() {
+            const sel = document.getElementById('pr-type-filter');
+            const current = sel.value;
+            const tipos = new Map();
+            db.proveedores.forEach(pr => splitTipos(pr.type).forEach(t => {
+                const key = normalizeText(t);
+                if (!tipos.has(key)) tipos.set(key, t);
+            }));
+            const ordered = [...tipos.entries()].sort((a, b) => a[1].localeCompare(b[1]));
+            sel.innerHTML = '<option value="">Todos los repuestos</option>' +
+                ordered.map(([key, label]) => `<option value="${escapeHTML(key)}">${escapeHTML(label)}</option>`).join('');
+            sel.value = tipos.has(current) ? current : '';
+        }
+
+        function renderProveedores() {
+            const container = document.getElementById('proveedoresList');
+            updateTipoFilterOptions();
+            if(db.proveedores.length === 0) {
+                container.innerHTML = '<div class="col-span-full text-center py-10 bg-white rounded-xl border border-dashed border-gray-300 text-gray-400"><i class="fa-solid fa-box-open text-4xl mb-3 text-gray-300"></i><p>No hay proveedores registrados</p></div>';
+                return;
+            }
+            const rawQ = document.getElementById('pr-search').value;
+            const q = normalizeText(rawQ);
+            const tipoSel = document.getElementById('pr-type-filter').value;
+            const list = db.proveedores.filter(pr =>
+                (!tipoSel || splitTipos(pr.type).some(t => normalizeText(t) === tipoSel)) &&
+                (!q ||
+                    normalizeText(pr.name).includes(q) ||
+                    normalizeText(pr.contact).includes(q) ||
+                    normalizeText(pr.type).includes(q) ||
+                    normalizeText(pr.phone).includes(q) ||
+                    phoneMatches(pr.phone, rawQ))
+            );
+            if (list.length === 0) { container.innerHTML = noResultsHTML(); return; }
+            container.innerHTML = list.map(pr => `
+                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex flex-col hover:shadow-md transition-shadow">
+                    <div class="flex-grow">
+                        <h3 class="font-bold text-emerald-700 mb-2 text-lg"><i class="fa-solid fa-building mr-1 text-emerald-400"></i> ${escapeHTML(pr.name)}</h3>
+                        ${pr.contact ? `<p class="text-sm text-gray-600 mb-1 flex items-center gap-2"><i class="fa-solid fa-user-tie w-4 text-center text-gray-400"></i> ${escapeHTML(pr.contact)}</p>` : ''}
+                        <p class="text-sm text-gray-600 mb-1 flex items-center gap-2"><i class="fa-solid fa-phone w-4 text-center text-gray-400"></i> ${escapeHTML(pr.phone)}</p>
+                        ${pr.type ? `<span class="mt-3 inline-block text-xs bg-emerald-50 text-emerald-700 border border-emerald-100 px-2.5 py-1 rounded-md font-medium"><i class="fa-solid fa-tags mr-1"></i>${escapeHTML(pr.type)}</span>` : ''}
+                    </div>
+                    <!-- Acción Footer -->
+                    <div class="pt-3 mt-4 border-t border-gray-100 flex justify-end gap-2">
+                        <button onclick="openEditModal('proveedores', ${pr.id})" class="px-3 py-1.5 text-sm rounded-md font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors flex items-center gap-1">
+                            <i class="fa-solid fa-pen-to-square"></i> Editar
+                        </button>
+                        <button onclick="deleteEntity('proveedores', ${pr.id})" class="px-3 py-1.5 text-sm rounded-md font-medium text-red-600 bg-red-50 hover:bg-red-100 transition-colors flex items-center gap-1">
+                            <i class="fa-solid fa-trash-can"></i> Eliminar
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // --- Generic Delete logic ---
+        window.deleteEntity = function(type, id) {
+            db[type] = db[type].filter(item => item.id !== id);
+            saveData(KEYS[type], db[type]);
+            updateAllViews();
+            showToast('Registro eliminado exitosamente', 'success');
+        };
+
+        // ================= RESPALDO LOGIC =================
+        window.exportarDatos = function() {
+            try {
+                const payload = {
+                    metadata: {
+                        app: "Gestión de Taller Pro",
+                        version: "2.1",
+                        exportDate: new Date().toISOString()
+                    },
+                    data: {
+                        equipos: db.equipos,
+                        clientes: db.clientes,
+                        proveedores: db.proveedores
+                    }
+                };
+
+                const dataStr = JSON.stringify(payload, null, 2);
+                const blob = new Blob([dataStr], { type: "application/json" });
+                const url = URL.createObjectURL(blob);
+                
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = `respaldo_taller_${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                
+                showToast('¡Datos exportados con éxito!', 'success');
+            } catch (error) {
+                console.error("Export error: ", error);
+                showToast('Error al exportar los datos', 'error');
+            }
+        };
+
+        window.importarDatos = function() {
+            const fileInput = document.getElementById('importFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showToast('Por favor, selecciona un archivo .json primero', 'error');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    
+                    if(parsed && parsed.data && (parsed.data.equipos || parsed.data.clientes || parsed.data.proveedores)) {
+                        if(parsed.data.equipos) localStorage.setItem(KEYS.equipos, JSON.stringify(parsed.data.equipos));
+                        if(parsed.data.clientes) localStorage.setItem(KEYS.clientes, JSON.stringify(parsed.data.clientes));
+                        if(parsed.data.proveedores) localStorage.setItem(KEYS.proveedores, JSON.stringify(parsed.data.proveedores));
+                        
+                        loadAllData();
+                        Object.keys(KEYS).forEach(t => saveData(KEYS[t], db[t]));
+                        updateAllViews();
+                        fileInput.value = '';
+                        
+                        showToast('¡Base de datos restaurada correctamente!', 'success');
+                    } else {
+                        showToast('El archivo no tiene el formato correcto.', 'error');
+                    }
+                } catch (error) {
+                    console.error("Import error: ", error);
+                    showToast('Error al leer el archivo JSON', 'error');
+                }
+            };
+            
+            reader.onerror = function() {
+                showToast('Hubo un error de lectura en el archivo', 'error');
+            };
+
+            reader.readAsText(file);
+        };
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', init);
+
+    </script>
+
+    <!-- Login (Firebase Authentication) -->
+    <div id="login-overlay" class="fixed inset-0 bg-slate-900 flex items-center justify-center p-4" style="z-index:100">
+        <form id="login-form" class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 space-y-4">
+            <div class="text-center"><i class="fa-solid fa-wrench text-blue-500 text-3xl mb-2"></i><h1 class="text-xl font-bold text-gray-800">AutoGestión Pro</h1><p class="text-sm text-gray-500">Ingresa con tu cuenta del taller</p></div>
+            <input type="email" id="login-email" required autocomplete="username" placeholder="Correo" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none focus:ring-blue-500">
+            <input type="password" id="login-pass" required autocomplete="current-password" placeholder="Contraseña" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none focus:ring-blue-500">
+            <p id="login-error" class="text-sm text-red-600 hidden"></p>
+            <button type="submit" id="login-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-md transition">Ingresar</button>
+        </form>
+    </div>
+    <div id="sync-pill" class="hidden fixed bottom-3 right-3 bg-slate-900/90 text-white text-xs rounded-full pl-3 pr-1 py-1 flex items-center gap-2 shadow-lg" style="z-index:40">
+        <span id="sync-dot" class="w-2 h-2 rounded-full bg-green-400"></span><span id="sync-user" class="truncate" style="max-width:140px"></span>
+        <button id="logout-btn" type="button" class="bg-slate-700 hover:bg-slate-600 rounded-full px-2 py-1">Salir</button>
+    </div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, onSnapshot, writeBatch } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+
+const app = initializeApp({
+    apiKey: "AIzaSyBRNAfwDu5lTO3-bM88Bv7IiGALr-Cg7_Q",
+    authDomain: "mecanico-c9c7c.firebaseapp.com",
+    projectId: "mecanico-c9c7c",
+    storageBucket: "mecanico-c9c7c.firebasestorage.app",
+    messagingSenderId: "625069269483",
+    appId: "1:625069269483:web:63a5ee1ecdb6a7e41339ae"
+});
+const auth = getAuth(app);
+let fs;
+try { fs = initializeFirestore(app, { localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }) }); }
+catch (e) { console.warn('Sin caché offline:', e); fs = initializeFirestore(app, {}); }
+
+const $ = id => document.getElementById(id);
+const types = Object.keys(KEYS);
+const known = {};   // última versión conocida en la nube: tipo -> Map(id -> json)
+const ready = {};
+let unsubs = [], migrationChecked = false, localBackup = {};
+// JSON con claves ordenadas para comparar registros sin falsos cambios
+const st = o => JSON.stringify(o, (k, v) => v && typeof v === 'object' && !Array.isArray(v) ? Object.fromEntries(Object.entries(v).sort(([a], [b]) => a < b ? -1 : 1)) : v);
+
+// Envía a la nube solo lo que cambió (altas, ediciones y borrados)
+window.cloudPush = (key, arr) => {
+    const type = types.find(t => KEYS[t] === key);
+    if (!auth.currentUser || !type) return;
+    const prev = known[type] || new Map(), next = new Map(), ops = [];
+    arr.forEach(it => {
+        if (it.id === undefined || it.id === null) return;
+        const id = String(it.id), js = st(it);
+        next.set(id, js);
+        if (prev.get(id) !== js) ops.push(b => b.set(doc(fs, type, id), JSON.parse(JSON.stringify(it))));
+    });
+    prev.forEach((_, id) => { if (!next.has(id)) ops.push(b => b.delete(doc(fs, type, id))); });
+    known[type] = next;
+    for (let i = 0; i < ops.length; i += 400) {
+        const b = writeBatch(fs);
+        ops.slice(i, i + 400).forEach(op => op(b));
+        b.commit().catch(e => { console.error(e); showToast('No se pudo sincronizar con la nube', 'error'); });
+    }
+};
+
+function maybeMigrate() {
+    if (migrationChecked || !types.every(t => ready[t])) return;
+    migrationChecked = true;
+    const cloudEmpty = types.every(t => db[t].length === 0);
+    const localHas = types.some(t => (localBackup[t] || []).length > 0);
+    if (cloudEmpty && localHas && confirm('La nube está vacía y este dispositivo tiene datos guardados. ¿Subirlos ahora a la nube?')) {
+        types.forEach(t => { db[t] = localBackup[t] || []; saveData(KEYS[t], db[t]); });
+        updateAllViews();
+        showToast('Datos subidos a la nube');
+    }
+}
+
+function listen() {
+    types.forEach(t => { try { localBackup[t] = JSON.parse(localStorage.getItem(KEYS[t])) || []; } catch (e) { localBackup[t] = []; } });
+    types.forEach(type => {
+        unsubs.push(onSnapshot(collection(fs, type), snap => {
+            const arr = snap.docs.map(d => d.data()).sort((a, b) => (a.id || 0) - (b.id || 0));
+            known[type] = new Map(arr.map(it => [String(it.id), st(it)]));
+            db[type] = arr;
+            if (migrationChecked) localStorage.setItem(KEYS[type], JSON.stringify(arr));
+            if (!snap.metadata.fromCache) ready[type] = true;
+            updateAllViews();
+            maybeMigrate();
+        }, err => { console.error(err); showToast('Sin permisos o sin conexión con la nube', 'error'); }));
+    });
+}
+
+function setOnline() { $('sync-dot').className = 'w-2 h-2 rounded-full ' + (navigator.onLine ? 'bg-green-400' : 'bg-orange-400'); $('sync-dot').title = navigator.onLine ? 'Conectado' : 'Sin conexión (se sincroniza al volver)'; }
+window.addEventListener('online', setOnline);
+window.addEventListener('offline', setOnline);
+
+function start() {
+    $('login-form').addEventListener('submit', async e => {
+        e.preventDefault();
+        const err = $('login-error'), btn = $('login-btn');
+        err.classList.add('hidden'); btn.disabled = true; btn.textContent = 'Ingresando...';
+        try { await signInWithEmailAndPassword(auth, $('login-email').value.trim(), $('login-pass').value); $('login-pass').value = ''; }
+        catch (ex) {
+            err.textContent = ex.code === 'auth/network-request-failed' ? 'Sin conexión a internet.' : ex.code === 'auth/too-many-requests' ? 'Demasiados intentos. Espera unos minutos.' : 'Correo o contraseña incorrectos.';
+            err.classList.remove('hidden');
+        }
+        btn.disabled = false; btn.textContent = 'Ingresar';
+    });
+    $('logout-btn').addEventListener('click', () => signOut(auth));
+    onAuthStateChanged(auth, user => {
+        unsubs.forEach(f => f()); unsubs = [];
+        types.forEach(t => { ready[t] = false; delete known[t]; });
+        migrationChecked = false;
+        if (user) {
+            $('login-overlay').classList.add('hidden');
+            $('sync-pill').classList.remove('hidden');
+            $('sync-user').textContent = user.email;
+            setOnline();
+            listen();
+        } else {
+            types.forEach(t => db[t] = []);
+            updateAllViews();
+            $('sync-pill').classList.add('hidden');
+            $('login-overlay').classList.remove('hidden');
+        }
+    });
+}
+// Se inicia después del init() de la app (que se registró primero)
+if (document.readyState === 'complete') start(); else document.addEventListener('DOMContentLoaded', start);
+</script>
+</body>
+</html>

@@ -224,7 +224,7 @@
                                 <button type="button" onclick="calcularMonto('eq')" class="w-full bg-slate-800 hover:bg-slate-900 text-white text-sm font-medium py-2 rounded-md transition duration-200 flex items-center justify-center gap-2"><i class="fa-solid fa-calculator"></i> Calcular Monto</button>
                                 <div>
                                     <label class="block text-xs font-medium text-gray-700 mb-1">Monto a pagar ($)</label>
-                                    <input type="number" id="eq-payment" readonly value="0" class="w-full rounded-md border-gray-300 border bg-white px-3 py-2 text-sm font-bold text-emerald-700 outline-none cursor-default">
+                                    <input type="number" id="eq-payment" readonly value="0" class="w-full rounded-md border-gray-300 border bg-white px-3 py-2 text-sm font-bold text-emerald-700 outline-none cursor-default"><p id="eq-payment-note" class="text-xs text-gray-500 mt-1"></p>
                                 </div>
                             </div>
                             <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-md transition duration-200">Guardar Equipo</button>
@@ -418,7 +418,7 @@
                         <button type="button" onclick="calcularMonto('edit-eq')" class="w-full bg-slate-800 hover:bg-slate-900 text-white text-sm font-medium py-2 rounded-md transition duration-200 flex items-center justify-center gap-2"><i class="fa-solid fa-calculator"></i> Calcular Monto</button>
                         <div>
                             <label class="block text-xs font-medium text-gray-700 mb-1">Monto a pagar ($)</label>
-                            <input type="number" id="edit-eq-payment" readonly value="0" class="w-full rounded-md border-gray-300 border bg-white px-3 py-2 text-sm font-bold text-emerald-700 outline-none cursor-default">
+                            <input type="number" id="edit-eq-payment" readonly value="0" class="w-full rounded-md border-gray-300 border bg-white px-3 py-2 text-sm font-bold text-emerald-700 outline-none cursor-default"><p id="edit-eq-payment-note" class="text-xs text-gray-500 mt-1"></p>
                         </div>
                     </div>
                     <div class="pt-4 border-t border-gray-100 flex justify-end gap-3 mt-4">
@@ -451,6 +451,27 @@
                     </div>
                 </form>
 
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Historial del cliente -->
+    <div id="history-overlay" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center backdrop-blur-sm p-4" style="z-index:55" onclick="if(event.target===this) closeHistorial()">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-auto overflow-hidden max-h-full flex flex-col">
+            <div class="px-6 py-4 border-b border-gray-100 flex items-start justify-between gap-3">
+                <div>
+                    <h3 class="text-lg font-bold text-gray-800"><i class="fa-solid fa-clock-rotate-left text-indigo-600 mr-1"></i> Historial</h3>
+                    <p id="hist-sub" class="text-sm text-gray-500"></p>
+                </div>
+                <button type="button" onclick="closeHistorial()" class="text-gray-400 hover:text-gray-600 text-xl leading-none" aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto space-y-5">
+                <button type="button" onclick="toggleHistPicker()" class="px-3 py-1.5 text-sm rounded-md font-medium text-white bg-indigo-600 hover:bg-indigo-700 transition-colors flex items-center gap-1"><i class="fa-solid fa-plus"></i> Agregar equipo del listado</button>
+                <div id="hist-pick" class="hidden rounded-lg border border-indigo-100 bg-indigo-50/40 p-3 space-y-2">
+                    <input type="search" id="hist-pick-q" oninput="renderPicker()" placeholder="Buscar por dueño, equipo o matrícula..." autocomplete="off" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm bg-white outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    <div id="hist-pick-list" class="space-y-2"></div>
+                </div>
+                <div id="hist-body" class="space-y-6"></div>
             </div>
         </div>
     </div>
@@ -646,7 +667,8 @@
                 document.getElementById('edit-eq-labor').value = item.laborText || (item.labor ? String(item.labor) : '');
                 document.getElementById('edit-eq-pct').value = item.pct ?? 10;
                 updatePartsSum('edit-eq');
-                document.getElementById('edit-eq-payment').value = Number(item.payment || 0).toFixed(2);
+                document.getElementById('edit-eq-payment').dataset.base = (item.partsCost || item.labor) ? 0 : (item.total ?? item.payment ?? 0);
+                refreshMonto('edit-eq');
                 document.getElementById('edit-eq-status').value = item.status;
             } else if (type === 'clientes') {
                 titleText = "Editar Cliente";
@@ -716,9 +738,17 @@
                 db[type][index].laborText = document.getElementById('edit-eq-labor').value.trim();
                 db[type][index].pct = getMontoInputs('edit-eq').pct;
                 db[type][index].payment = getMontoTotal('edit-eq');
+                db[type][index].total = getTotalCost('edit-eq');
                 db[type][index].status = document.getElementById('edit-eq-status').value;
             } else if (type === 'clientes') {
+                const oldKey = normalizeText(db[type][index].name);
                 db[type][index].name = document.getElementById('edit-cl-name').value.trim();
+                const newName = db[type][index].name;
+                if (newName && oldKey && normalizeText(newName) !== oldKey) {
+                    let moved = false;
+                    db.equipos.forEach(eq => { if (normalizeText(eq.owner) === oldKey) { eq.owner = newName; moved = true; } });
+                    if (moved) saveData(KEYS.equipos, db.equipos);
+                }
                 db[type][index].phone = document.getElementById('edit-cl-phone').value.trim();
                 db[type][index].email = document.getElementById('edit-cl-email').value.trim();
                 db[type][index].address = document.getElementById('edit-cl-address').value.trim();
@@ -746,6 +776,8 @@
                 document.getElementById(`${prefix}-${f}`).addEventListener('input', () => refreshMonto(prefix))));
             document.getElementById('eq-search').addEventListener('input', renderEquipos);
             document.getElementById('cl-search').addEventListener('input', renderClientes);
+            setupOwnerAutocomplete('eq-owner');
+            setupOwnerAutocomplete('edit-eq-owner');
             document.getElementById('pr-search').addEventListener('input', renderProveedores);
             document.getElementById('clienteForm').addEventListener('submit', handleAddCliente);
             document.getElementById('proveedorForm').addEventListener('submit', handleAddProveedor);
@@ -787,6 +819,7 @@
                 laborText: document.getElementById('eq-labor').value.trim(),
                 pct: getMontoInputs('eq').pct,
                 payment: getMontoTotal('eq'),
+                total: getTotalCost('eq'),
                 status: document.getElementById('eq-status').value
             };
             fillBlanks(newObj, 'equipos');
@@ -854,7 +887,9 @@
                             ${(eq.partsCost || eq.labor) ? `<p class="mb-1 text-xs text-gray-600">Repuestos: <b>$${Number(eq.partsCost || 0).toFixed(2)}</b> + Mano de obra: <b>$${Number(eq.labor || 0).toFixed(2)}</b> + <b>${Number(eq.pct || 0)}%</b></p>` : ''}
                             ${eq.partsText && /\p{L}/u.test(eq.partsText) ? `<p class="mb-1 text-xs text-gray-500">Detalle repuestos: ${escapeHTML(eq.partsText)}</p>` : ''}
                             ${eq.laborText && /\p{L}/u.test(eq.laborText) ? `<p class="mb-1 text-xs text-gray-500">Detalle mano de obra: ${escapeHTML(eq.laborText)}</p>` : ''}
-                            <p class="flex items-center justify-between"><span class="text-gray-500 font-medium">Monto a pagar:</span> <span class="font-bold text-emerald-700 text-base">$${Number(eq.payment || 0).toFixed(2)}</span></p>
+                            <p class="mb-1 flex items-center justify-between text-xs text-gray-600"><span>Costo total:</span> <b>${money(eqTotal(eq))}</b></p>
+                            <p class="flex items-center justify-between"><span class="text-gray-500 font-medium">Monto a pagar:</span> <span class="font-bold text-base ${eqBalance(eq) < 0 ? 'text-red-600' : 'text-emerald-700'}">${money(eqBalance(eq))}</span></p>
+                            ${eqBalance(eq) < 0 ? '<p class="text-xs text-red-600 text-right">Saldo a favor del cliente</p>' : ''}
                         </div>
                         ${eq.desc ? `<div class="mt-2 text-xs text-gray-600 italic border-l-2 border-gray-300 pl-2 py-0.5">${escapeHTML(eq.desc)}</div>` : ''}
                     </div>
@@ -903,13 +938,14 @@
             if (el) el.textContent = `Suma de repuestos: $${getMontoInputs(prefix).parts.toFixed(2)}`;
             const lel = document.getElementById(`${prefix}-labor-sum`);
             if (lel) lel.textContent = `Suma de mano de obra: $${getMontoInputs(prefix).labor.toFixed(2)}`;
+            const nel = document.getElementById(`${prefix}-payment-note`);
+            if (nel) nel.textContent = `Costo total ${money(getTotalCost(prefix))} menos entregas ${money(costSum(prefix))}`;
         }
 
         // Recalcula la suma de repuestos y el monto a pagar mientras se escribe
         function refreshMonto(prefix) {
             updatePartsSum(prefix);
-            const { parts, labor, pct } = getMontoInputs(prefix);
-            document.getElementById(`${prefix}-payment`).value = computePayment(parts, labor, pct).toFixed(2);
+            document.getElementById(`${prefix}-payment`).value = getMontoTotal(prefix).toFixed(2);
         }
 
         // --- Cálculo del Monto a pagar: (Repuestos + Mano de obra) + % sobre ese total ---
@@ -926,18 +962,27 @@
             return Math.round(subtotal * (1 + pct / 100) * 100) / 100;
         }
 
-        // Total a guardar: si hay datos de cálculo, se recalcula; si no, se conserva el monto actual (equipos antiguos)
-        function getMontoTotal(prefix) {
+        // Costo total del equipo: repuestos + mano de obra + %. En equipos antiguos sin esos datos se usa el total guardado
+        function getTotalCost(prefix) {
             const { parts, labor, pct } = getMontoInputs(prefix);
             if (parts + labor > 0) return computePayment(parts, labor, pct);
-            return Math.max(0, parseFloat(document.getElementById(`${prefix}-payment`).value) || 0);
+            const base = parseFloat(document.getElementById(`${prefix}-payment`).dataset.base);
+            return isFinite(base) ? base : 0;
         }
 
+        // Monto a pagar = costo total - entregas (queda negativo si no hay costo definido o se entregó de más)
+        function getMontoTotal(prefix) {
+            return Math.round((getTotalCost(prefix) - costSum(prefix)) * 100) / 100;
+        }
+
+        function money(n) { return (n < 0 ? '-' : '') + '$' + Math.abs(n).toFixed(2); }
+        function eqTotal(eq) { return Number(eq.total ?? eq.payment ?? 0); }
+        function eqBalance(eq) { return Math.round((eqTotal(eq) - Number(eq.cost || 0)) * 100) / 100; }
+
         window.calcularMonto = function(prefix) {
-            const { parts, labor, pct } = getMontoInputs(prefix);
-            const total = computePayment(parts, labor, pct);
+            const total = getMontoTotal(prefix);
             document.getElementById(`${prefix}-payment`).value = total.toFixed(2);
-            showToast(`Monto calculado: $${total.toFixed(2)}`, 'info');
+            showToast(`Monto calculado: ${money(total)}`, 'info');
         };
 
         // ================= POPUP: AGREGAR CLIENTE DESDE UN EQUIPO NUEVO =================
@@ -1026,6 +1071,9 @@
                     </div>
                     <!-- Acción Footer -->
                     <div class="pt-3 mt-4 border-t border-gray-100 flex justify-end gap-2">
+                        <button onclick="openHistorial(${cl.id})" class="px-3 py-1.5 text-sm rounded-md font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center gap-1">
+                            <i class="fa-solid fa-clock-rotate-left"></i> Historial
+                        </button>
                         <button onclick="openEditModal('clientes', ${cl.id})" class="px-3 py-1.5 text-sm rounded-md font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors flex items-center gap-1">
                             <i class="fa-solid fa-pen-to-square"></i> Editar
                         </button>
@@ -1114,7 +1162,175 @@
         }
 
         // --- Generic Delete logic ---
+        // ================= HISTORIAL DE CLIENTES =================
+        let histClientId = null;
+        function fmtFecha(t) { return t ? new Date(t).toLocaleDateString('es-UY') : '-'; }
+
+        function snapOf(eq) {
+            const o = { id: eq.id, owner: eq.owner, type: eq.type, plate: eq.plate, fault: eq.fault, status: eq.status, timestamp: eq.timestamp, payment: eq.payment, total: eq.total ?? eq.payment, cost: eq.cost };
+            Object.keys(o).forEach(k => { if (o[k] === undefined) o[k] = ''; });
+            return o;
+        }
+
+        // live: equipos agregados a mano + los que coinciden por nombre. gone: ya no están en el listado (retirados)
+        function historyOf(cl) {
+            const key = normalizeText(cl.name), saved = cl.history || [];
+            const live = db.equipos.filter(e => saved.some(h => h.id === e.id) ||
+                (key && key !== '-' && normalizeText(e.owner) === key && !db.clientes.some(c => c.id !== cl.id && (c.history || []).some(h => h.id === e.id))));
+            const gone = saved.filter(h => !db.equipos.some(e => e.id === h.id));
+            return { live, gone };
+        }
+
+        // Al eliminar un equipo del listado, queda guardado en el historial de su cliente como retirado
+        function archiveToHistory(id) {
+            const eq = db.equipos.find(e => e.id === id);
+            if (!eq) return;
+            let touched = false;
+            db.clientes.forEach(c => {
+                if (historyOf(c).live.some(e => e.id === id)) {
+                    c.history = (c.history || []).filter(h => h.id !== id).concat(snapOf(eq));
+                    touched = true;
+                }
+            });
+            if (touched) saveData(KEYS.clientes, db.clientes);
+        }
+
+        function renderHistorial() {
+            const cl = db.clientes.find(c => c.id === histClientId);
+            if (!cl) return;
+            const key = normalizeText(cl.name), { live, gone } = historyOf(cl);
+            const saved = id => (cl.history || []).some(h => h.id === id);
+            const card = e => `<div class="border border-gray-200 rounded-lg p-3 text-sm">
+                <div class="flex items-center justify-between gap-2"><span class="font-semibold text-gray-800">${escapeHTML(e.type)} <span class="text-xs bg-gray-100 border border-gray-200 px-2 py-0.5 rounded font-mono ml-1">${escapeHTML(e.plate)}</span></span><span class="text-xs font-semibold rounded-full border px-2 py-0.5 ${statusConf[e.status] || ''}">${escapeHTML(e.status)}</span></div>
+                <p class="text-gray-600 mt-1">${escapeHTML(e.fault)}</p>
+                ${normalizeText(e.owner) !== key ? `<p class="text-xs text-orange-600 mt-1">Anotado como "${escapeHTML(e.owner)}"</p>` : ''}
+                <div class="flex items-center justify-between gap-2 mt-1"><p class="text-xs text-gray-500">Ingresó el ${fmtFecha(e.timestamp)}. Monto a pagar: ${money(eqBalance(e))}</p>${saved(e.id) ? `<button type="button" onclick="removeFromHistory(${e.id})" class="shrink-0 text-xs text-red-600 hover:underline">Quitar del historial</button>` : ''}</div>
+            </div>`;
+            const block = (title, arr, empty) => `<div><h4 class="text-sm font-semibold text-gray-700 mb-2">${title} (${arr.length})</h4>` +
+                (arr.length ? `<div class="space-y-2">${arr.map(card).join('')}</div>` : `<p class="text-sm text-gray-400">${empty}</p>`) + '</div>';
+            const total = live.length + gone.length;
+            document.getElementById('hist-sub').textContent = `${cl.name}: ${total} ${total === 1 ? 'equipo registrado' : 'equipos registrados'}`;
+            document.getElementById('hist-body').innerHTML =
+                block('En el local', live, 'No tiene equipos en el local.') +
+                block('Ya retirados', gone, 'Todavía no retiró ningún equipo.');
+        }
+
+        function renderPicker() {
+            const cl = db.clientes.find(c => c.id === histClientId);
+            if (!cl) return;
+            const { live } = historyOf(cl);
+            const q = normalizeText(document.getElementById('hist-pick-q').value);
+            const rows = db.equipos
+                .filter(e => !live.some(l => l.id === e.id))
+                .filter(e => !q || normalizeText(e.owner).includes(q) || normalizeText(e.plate).includes(q) || normalizeText(e.type).includes(q))
+                .sort((a, b) => b.timestamp - a.timestamp).slice(0, 8);
+            document.getElementById('hist-pick-list').innerHTML = rows.length ? rows.map(e => {
+                const other = db.clientes.find(c => c.id !== cl.id && (c.history || []).some(h => h.id === e.id));
+                return `<div class="flex items-center justify-between gap-2 border border-gray-200 bg-white rounded-lg p-2 text-sm"><div class="min-w-0"><p class="font-medium text-gray-800 truncate">${escapeHTML(e.owner)}: ${escapeHTML(e.type)} <span class="font-mono text-xs text-gray-500">${escapeHTML(e.plate)}</span></p>${other ? `<p class="text-xs text-orange-600">Hoy figura en el historial de ${escapeHTML(other.name)}</p>` : ''}</div><button type="button" onclick="addToHistory(${e.id})" class="shrink-0 px-3 py-1 text-xs font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700">Agregar</button></div>`;
+            }).join('') : '<p class="text-sm text-gray-400">No hay otros equipos para agregar.</p>';
+        }
+
+        function refreshHist() {
+            renderHistorial();
+            if (!document.getElementById('hist-pick').classList.contains('hidden')) renderPicker();
+        }
+
+        window.openHistorial = function(id) {
+            histClientId = id;
+            document.getElementById('hist-pick').classList.add('hidden');
+            renderHistorial();
+            document.getElementById('history-overlay').classList.remove('hidden');
+        };
+        window.closeHistorial = function() {
+            histClientId = null;
+            document.getElementById('history-overlay').classList.add('hidden');
+        };
+        window.toggleHistPicker = function() {
+            const box = document.getElementById('hist-pick');
+            box.classList.toggle('hidden');
+            if (!box.classList.contains('hidden')) {
+                const q = document.getElementById('hist-pick-q');
+                q.value = '';
+                renderPicker();
+                q.focus();
+            }
+        };
+        window.addToHistory = function(eqId) {
+            const cl = db.clientes.find(c => c.id === histClientId);
+            const eq = db.equipos.find(e => e.id === eqId);
+            if (!cl || !eq) return;
+            // Un equipo pertenece a un solo cliente: si estaba en otro historial, se mueve a este
+            db.clientes.forEach(c => { if (c.history) c.history = c.history.filter(h => h.id !== eqId); });
+            cl.history = (cl.history || []).concat(snapOf(eq));
+            saveData(KEYS.clientes, db.clientes);
+            refreshHist();
+            showToast('Equipo agregado al historial');
+        };
+        window.removeFromHistory = function(eqId) {
+            const cl = db.clientes.find(c => c.id === histClientId);
+            if (!cl) return;
+            cl.history = (cl.history || []).filter(h => h.id !== eqId);
+            saveData(KEYS.clientes, db.clientes);
+            refreshHist();
+            showToast('Equipo quitado del historial');
+        };
+
+        // Nombres únicos de dueños: directorio de clientes + dueños ya cargados en equipos
+        function ownerNames() {
+            const seen = new Map();
+            [...db.clientes.map(c => c.name), ...db.equipos.map(e => e.owner)].forEach(nm => {
+                const k = normalizeText(nm);
+                if (k && k !== '-' && !seen.has(k)) seen.set(k, String(nm).trim());
+            });
+            return [...seen.values()];
+        }
+
+        function setupOwnerAutocomplete(inputId) {
+            const input = document.getElementById(inputId);
+            if (!input || input.dataset.ac) return;
+            input.dataset.ac = '1';
+            input.setAttribute('autocomplete', 'off');
+            const wrap = input.parentElement;
+            wrap.classList.add('relative');
+            const box = document.createElement('div');
+            box.className = 'hidden absolute left-0 right-0 top-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-56 overflow-y-auto';
+            box.style.zIndex = '70';
+            wrap.appendChild(box);
+            let items = [], active = -1;
+            const pick = nm => { input.value = nm; box.classList.add('hidden'); };
+            const paint = () => {
+                box.innerHTML = items.map((nm, i) => {
+                    const k = normalizeText(nm);
+                    const n = db.equipos.filter(e => normalizeText(e.owner) === k).length;
+                    return `<div data-i="${i}" class="px-3 py-2 text-sm cursor-pointer flex justify-between gap-2 ${i === active ? 'bg-indigo-50' : 'hover:bg-gray-50'}"><span>${escapeHTML(nm)}</span><span class="text-xs text-gray-400">${n} ${n === 1 ? 'equipo' : 'equipos'}</span></div>`;
+                }).join('');
+                box.classList.toggle('hidden', !items.length);
+            };
+            input.addEventListener('input', () => {
+                const q = normalizeText(input.value);
+                items = q ? ownerNames()
+                    .filter(nm => normalizeText(nm).includes(q) && normalizeText(nm) !== q)
+                    .sort((a, b) => (normalizeText(b).startsWith(q) - normalizeText(a).startsWith(q)) || a.localeCompare(b))
+                    .slice(0, 6) : [];
+                active = -1;
+                paint();
+            });
+            input.addEventListener('keydown', e => {
+                if (box.classList.contains('hidden')) return;
+                if (e.key === 'ArrowDown') { e.preventDefault(); active = (active + 1) % items.length; paint(); }
+                else if (e.key === 'ArrowUp') { e.preventDefault(); active = active <= 0 ? items.length - 1 : active - 1; paint(); }
+                else if (e.key === 'Enter' && active > -1) { e.preventDefault(); pick(items[active]); }
+                else if (e.key === 'Escape') box.classList.add('hidden');
+            });
+            box.addEventListener('mousedown', e => {
+                const row = e.target.closest('[data-i]');
+                if (row) { e.preventDefault(); pick(items[+row.dataset.i]); }
+            });
+            input.addEventListener('blur', () => box.classList.add('hidden'));
+        }
+
         window.deleteEntity = function(type, id) {
+            if (type === 'equipos') archiveToHistory(id);
             db[type] = db[type].filter(item => item.id !== id);
             saveData(KEYS[type], db[type]);
             updateAllViews();
@@ -1393,4 +1609,4 @@ function start() {
 if (document.readyState === 'complete') start(); else document.addEventListener('DOMContentLoaded', start);
 </script>
 </body>
-</html>
+</html>

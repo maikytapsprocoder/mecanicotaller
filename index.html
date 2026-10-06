@@ -191,16 +191,16 @@
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 sticky top-4">
                         <div class="px-5 py-4 border-b border-gray-100"><h2 class="font-semibold text-gray-800">Nuevo Ingreso</h2></div>
                         <form id="equipoForm" class="p-5 space-y-4">
-                            <div><label class="block text-xs font-medium text-gray-700 mb-1">Dueño *</label><input type="text" id="eq-owner" required class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500 outline-none"></div>
+                            <div><label class="block text-xs font-medium text-gray-700 mb-1">Dueño</label><input type="text" id="eq-owner" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500 outline-none"></div>
                             <div class="grid grid-cols-2 gap-3">
-                                <div><label class="block text-xs font-medium text-gray-700 mb-1">Equipo *</label><input type="text" id="eq-type" required class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
-                                <div><label class="block text-xs font-medium text-gray-700 mb-1">Matrícula *</label><input type="text" id="eq-plate" required class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm uppercase focus:ring-blue-500 outline-none"></div>
+                                <div><label class="block text-xs font-medium text-gray-700 mb-1">Equipo</label><input type="text" id="eq-type" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
+                                <div><label class="block text-xs font-medium text-gray-700 mb-1">Matrícula</label><input type="text" id="eq-plate" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm uppercase focus:ring-blue-500 outline-none"></div>
                             </div>
-                            <div><label class="block text-xs font-medium text-gray-700 mb-1">Falla *</label><input type="text" id="eq-fault" required class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
+                            <div><label class="block text-xs font-medium text-gray-700 mb-1">Falla</label><input type="text" id="eq-fault" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
                             <div><label class="block text-xs font-medium text-gray-700 mb-1">Repuesto (Opcional)</label><input type="text" id="eq-part" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
                             <div><label class="block text-xs font-medium text-gray-700 mb-1">Descripción</label><textarea id="eq-desc" rows="2" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></textarea></div>
                             <div class="grid grid-cols-2 gap-3">
-                                <div><label class="block text-xs font-medium text-gray-700 mb-1">Costo ($)</label><input type="number" id="eq-cost" min="0" step="0.01" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none" value="0"></div>
+                                <div><label class="block text-xs font-medium text-gray-700 mb-1">Entregas ($)</label><input type="text" id="eq-cost" autocomplete="off" placeholder="Ej: Seña 500, Entrega 300" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"><p id="eq-cost-sum" class="text-xs font-medium text-blue-700 mt-1">Suma de entregas: $0.00</p></div>
                                 <div>
                                     <label class="block text-xs font-medium text-gray-700 mb-1">Estado</label>
                                     <select id="eq-status" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none">
@@ -215,11 +215,11 @@
                                 <p class="text-xs font-semibold text-blue-700 uppercase tracking-wide">Cálculo del monto a pagar</p>
                                 <div class="grid grid-cols-2 gap-3">
                                     <div class="col-span-2"><label class="block text-xs font-medium text-gray-700 mb-1">Costo de repuestos ($)</label><input type="text" id="eq-parts" autocomplete="off" placeholder="Ej: Pistón 100, Válvula 240, Motor 1500" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"><p id="eq-parts-sum" class="text-xs font-medium text-blue-700 mt-1">Suma de repuestos: $0.00</p><p class="text-xs text-gray-500">Escriba cada repuesto con su precio, separados por coma. El programa suma los números.</p></div>
-                                    <div class="col-span-2"><label class="block text-xs font-medium text-gray-700 mb-1">Mano de obra ($)</label><input type="number" id="eq-labor" min="0" step="0.01" value="0" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
+                                    <div class="col-span-2"><label class="block text-xs font-medium text-gray-700 mb-1">Mano de obra ($)</label><input type="text" id="eq-labor" autocomplete="off" placeholder="Ej: Cambio de aceite 500, Revisión 300" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"><p id="eq-labor-sum" class="text-xs font-medium text-blue-700 mt-1">Suma de mano de obra: $0.00</p><p class="text-xs text-gray-500">Escriba cada trabajo con su precio, separados por coma. El programa suma los números.</p></div>
                                 </div>
                                 <div>
                                     <label class="block text-xs font-medium text-gray-700 mb-1">% del total</label>
-                                    <select id="eq-pct" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none bg-white"><option value="10">10%</option><option value="20">20%</option><option value="30">30%</option><option value="40">40%</option><option value="50">50%</option><option value="60">60%</option><option value="70">70%</option><option value="80">80%</option><option value="90">90%</option><option value="100">100%</option></select>
+                                    <input type="number" id="eq-pct" min="0" step="any" value="10" inputmode="decimal" placeholder="Ej: 25" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none">
                                 </div>
                                 <button type="button" onclick="calcularMonto('eq')" class="w-full bg-slate-800 hover:bg-slate-900 text-white text-sm font-medium py-2 rounded-md transition duration-200 flex items-center justify-center gap-2"><i class="fa-solid fa-calculator"></i> Calcular Monto</button>
                                 <div>
@@ -274,8 +274,8 @@
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 sticky top-4">
                         <div class="px-5 py-4 border-b border-gray-100"><h2 class="font-semibold text-gray-800">Nuevo Cliente</h2></div>
                         <form id="clienteForm" class="p-5 space-y-4">
-                            <div><label class="block text-xs font-medium text-gray-700 mb-1">Nombre Completo *</label><input type="text" id="cl-name" required class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none"></div>
-                            <div><label class="block text-xs font-medium text-gray-700 mb-1">Teléfono *</label><input type="text" id="cl-phone" required class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none"></div>
+                            <div><label class="block text-xs font-medium text-gray-700 mb-1">Nombre Completo</label><input type="text" id="cl-name" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none"></div>
+                            <div><label class="block text-xs font-medium text-gray-700 mb-1">Teléfono</label><input type="text" id="cl-phone" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none"></div>
                             <div><label class="block text-xs font-medium text-gray-700 mb-1">Email</label><input type="email" id="cl-email" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none"></div>
                             <div><label class="block text-xs font-medium text-gray-700 mb-1">Dirección</label><input type="text" id="cl-address" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none"></div>
                             <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-md transition duration-200">Agregar Cliente</button>
@@ -306,9 +306,9 @@
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 sticky top-4">
                         <div class="px-5 py-4 border-b border-gray-100"><h2 class="font-semibold text-gray-800">Nuevo Proveedor</h2></div>
                         <form id="proveedorForm" class="p-5 space-y-4">
-                            <div><label class="block text-xs font-medium text-gray-700 mb-1">Empresa / Nombre *</label><input type="text" id="pr-name" required class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none"></div>
+                            <div><label class="block text-xs font-medium text-gray-700 mb-1">Empresa / Nombre</label><input type="text" id="pr-name" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none"></div>
                             <div><label class="block text-xs font-medium text-gray-700 mb-1">Persona de Contacto</label><input type="text" id="pr-contact" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none"></div>
-                            <div><label class="block text-xs font-medium text-gray-700 mb-1">Teléfono *</label><input type="text" id="pr-phone" required class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none"></div>
+                            <div><label class="block text-xs font-medium text-gray-700 mb-1">Teléfono</label><input type="text" id="pr-phone" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none"></div>
                             <div><label class="block text-xs font-medium text-gray-700 mb-1">Tipo de Repuestos / Insumos</label><input type="text" id="pr-type" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none" placeholder="Ej. Filtros, Aceites, Chapa"></div>
                             <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 rounded-md transition duration-200">Agregar Proveedor</button>
                         </form>
@@ -385,16 +385,16 @@
                 
                 <!-- EDIT FORM: EQUIPOS -->
                 <form id="editForm-equipos" class="hidden space-y-4" onsubmit="saveEdit(event, 'equipos')">
-                    <div><label class="block text-xs font-medium text-gray-700 mb-1">Dueño *</label><input type="text" id="edit-eq-owner" required class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
+                    <div><label class="block text-xs font-medium text-gray-700 mb-1">Dueño</label><input type="text" id="edit-eq-owner" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
                     <div class="grid grid-cols-2 gap-3">
-                        <div><label class="block text-xs font-medium text-gray-700 mb-1">Equipo *</label><input type="text" id="edit-eq-type" required class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
-                        <div><label class="block text-xs font-medium text-gray-700 mb-1">Matrícula *</label><input type="text" id="edit-eq-plate" required class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm uppercase focus:ring-blue-500 outline-none"></div>
+                        <div><label class="block text-xs font-medium text-gray-700 mb-1">Equipo</label><input type="text" id="edit-eq-type" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
+                        <div><label class="block text-xs font-medium text-gray-700 mb-1">Matrícula</label><input type="text" id="edit-eq-plate" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm uppercase focus:ring-blue-500 outline-none"></div>
                     </div>
-                    <div><label class="block text-xs font-medium text-gray-700 mb-1">Falla *</label><input type="text" id="edit-eq-fault" required class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
+                    <div><label class="block text-xs font-medium text-gray-700 mb-1">Falla</label><input type="text" id="edit-eq-fault" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
                     <div><label class="block text-xs font-medium text-gray-700 mb-1">Repuesto (Opcional)</label><input type="text" id="edit-eq-part" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
                     <div><label class="block text-xs font-medium text-gray-700 mb-1">Descripción</label><textarea id="edit-eq-desc" rows="2" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></textarea></div>
                     <div class="grid grid-cols-2 gap-3">
-                        <div><label class="block text-xs font-medium text-gray-700 mb-1">Costo ($)</label><input type="number" id="edit-eq-cost" min="0" step="0.01" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
+                        <div><label class="block text-xs font-medium text-gray-700 mb-1">Entregas ($)</label><input type="text" id="edit-eq-cost" autocomplete="off" placeholder="Ej: Seña 500, Entrega 300" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"><p id="edit-eq-cost-sum" class="text-xs font-medium text-blue-700 mt-1">Suma de entregas: $0.00</p></div>
                         <div>
                             <label class="block text-xs font-medium text-gray-700 mb-1">Estado</label>
                             <select id="edit-eq-status" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none">
@@ -409,11 +409,11 @@
                         <p class="text-xs font-semibold text-blue-700 uppercase tracking-wide">Cálculo del monto a pagar</p>
                         <div class="grid grid-cols-2 gap-3">
                             <div class="col-span-2"><label class="block text-xs font-medium text-gray-700 mb-1">Costo de repuestos ($)</label><input type="text" id="edit-eq-parts" autocomplete="off" placeholder="Ej: Pistón 100, Válvula 240, Motor 1500" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"><p id="edit-eq-parts-sum" class="text-xs font-medium text-blue-700 mt-1">Suma de repuestos: $0.00</p><p class="text-xs text-gray-500">Escriba cada repuesto con su precio, separados por coma. El programa suma los números.</p></div>
-                            <div class="col-span-2"><label class="block text-xs font-medium text-gray-700 mb-1">Mano de obra ($)</label><input type="number" id="edit-eq-labor" min="0" step="0.01" value="0" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
+                            <div class="col-span-2"><label class="block text-xs font-medium text-gray-700 mb-1">Mano de obra ($)</label><input type="text" id="edit-eq-labor" autocomplete="off" placeholder="Ej: Cambio de aceite 500, Revisión 300" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"><p id="edit-eq-labor-sum" class="text-xs font-medium text-blue-700 mt-1">Suma de mano de obra: $0.00</p><p class="text-xs text-gray-500">Escriba cada trabajo con su precio, separados por coma. El programa suma los números.</p></div>
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-gray-700 mb-1">% del total</label>
-                            <select id="edit-eq-pct" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none bg-white"><option value="10">10%</option><option value="20">20%</option><option value="30">30%</option><option value="40">40%</option><option value="50">50%</option><option value="60">60%</option><option value="70">70%</option><option value="80">80%</option><option value="90">90%</option><option value="100">100%</option></select>
+                            <input type="number" id="edit-eq-pct" min="0" step="any" value="10" inputmode="decimal" placeholder="Ej: 25" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none">
                         </div>
                         <button type="button" onclick="calcularMonto('edit-eq')" class="w-full bg-slate-800 hover:bg-slate-900 text-white text-sm font-medium py-2 rounded-md transition duration-200 flex items-center justify-center gap-2"><i class="fa-solid fa-calculator"></i> Calcular Monto</button>
                         <div>
@@ -429,8 +429,8 @@
 
                 <!-- EDIT FORM: CLIENTES -->
                 <form id="editForm-clientes" class="hidden space-y-4" onsubmit="saveEdit(event, 'clientes')">
-                    <div><label class="block text-xs font-medium text-gray-700 mb-1">Nombre Completo *</label><input type="text" id="edit-cl-name" required class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none focus:ring-indigo-500"></div>
-                    <div><label class="block text-xs font-medium text-gray-700 mb-1">Teléfono *</label><input type="text" id="edit-cl-phone" required class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none focus:ring-indigo-500"></div>
+                    <div><label class="block text-xs font-medium text-gray-700 mb-1">Nombre Completo</label><input type="text" id="edit-cl-name" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none focus:ring-indigo-500"></div>
+                    <div><label class="block text-xs font-medium text-gray-700 mb-1">Teléfono</label><input type="text" id="edit-cl-phone" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none focus:ring-indigo-500"></div>
                     <div><label class="block text-xs font-medium text-gray-700 mb-1">Email</label><input type="email" id="edit-cl-email" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none focus:ring-indigo-500"></div>
                     <div><label class="block text-xs font-medium text-gray-700 mb-1">Dirección</label><input type="text" id="edit-cl-address" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none focus:ring-indigo-500"></div>
                     <div class="pt-4 border-t border-gray-100 flex justify-end gap-3 mt-4">
@@ -441,9 +441,9 @@
 
                 <!-- EDIT FORM: PROVEEDORES -->
                 <form id="editForm-proveedores" class="hidden space-y-4" onsubmit="saveEdit(event, 'proveedores')">
-                    <div><label class="block text-xs font-medium text-gray-700 mb-1">Empresa / Nombre *</label><input type="text" id="edit-pr-name" required class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none focus:ring-emerald-500"></div>
+                    <div><label class="block text-xs font-medium text-gray-700 mb-1">Empresa / Nombre</label><input type="text" id="edit-pr-name" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none focus:ring-emerald-500"></div>
                     <div><label class="block text-xs font-medium text-gray-700 mb-1">Persona de Contacto</label><input type="text" id="edit-pr-contact" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none focus:ring-emerald-500"></div>
-                    <div><label class="block text-xs font-medium text-gray-700 mb-1">Teléfono *</label><input type="text" id="edit-pr-phone" required class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none focus:ring-emerald-500"></div>
+                    <div><label class="block text-xs font-medium text-gray-700 mb-1">Teléfono</label><input type="text" id="edit-pr-phone" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none focus:ring-emerald-500"></div>
                     <div><label class="block text-xs font-medium text-gray-700 mb-1">Tipo de Repuestos / Insumos</label><input type="text" id="edit-pr-type" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none focus:ring-emerald-500"></div>
                     <div class="pt-4 border-t border-gray-100 flex justify-end gap-3 mt-4">
                         <button type="button" onclick="closeModal()" class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 transition">Cancelar</button>
@@ -469,8 +469,8 @@
             </div>
             <form id="cp-step-form" class="hidden p-6 space-y-4" onsubmit="saveClientPrompt(event)">
                 <h3 class="text-lg font-bold text-gray-800"><i class="fa-solid fa-user-plus text-indigo-600 mr-1"></i> Nuevo Cliente</h3>
-                <div><label class="block text-xs font-medium text-gray-700 mb-1">Nombre Completo *</label><input type="text" id="cp-name" required class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none focus:ring-indigo-500"></div>
-                <div><label class="block text-xs font-medium text-gray-700 mb-1">Teléfono *</label><input type="text" id="cp-phone" required class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none focus:ring-indigo-500"></div>
+                <div><label class="block text-xs font-medium text-gray-700 mb-1">Nombre Completo</label><input type="text" id="cp-name" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none focus:ring-indigo-500"></div>
+                <div><label class="block text-xs font-medium text-gray-700 mb-1">Teléfono</label><input type="text" id="cp-phone" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none focus:ring-indigo-500"></div>
                 <div><label class="block text-xs font-medium text-gray-700 mb-1">Email</label><input type="email" id="cp-email" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none focus:ring-indigo-500"></div>
                 <div><label class="block text-xs font-medium text-gray-700 mb-1">Dirección</label><input type="text" id="cp-address" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none focus:ring-indigo-500"></div>
                 <div class="pt-4 border-t border-gray-100 flex justify-end gap-3">
@@ -559,6 +559,8 @@
             targetView.classList.remove('hidden');
             targetView.classList.add('block');
             document.getElementById(`nav-${viewName}`).classList.add('active');
+            const dbtn = document.getElementById('debug-btn-home');
+            if (dbtn) dbtn.classList.toggle('hidden', viewName !== 'inicio' || window.debugMode);
 
             // Close mobile menu if open
             if(window.innerWidth < 768) {
@@ -638,11 +640,12 @@
                 document.getElementById('edit-eq-fault').value = item.fault;
                 document.getElementById('edit-eq-part').value = item.part;
                 document.getElementById('edit-eq-desc').value = item.desc;
-                document.getElementById('edit-eq-cost').value = item.cost;
+                document.getElementById('edit-eq-cost').value = item.costText || (item.cost ? String(item.cost) : '');
                 document.getElementById('edit-eq-parts').value = item.partsText || (item.partsCost ? String(item.partsCost) : '');
                 updatePartsSum('edit-eq');
-                document.getElementById('edit-eq-labor').value = item.labor || 0;
-                document.getElementById('edit-eq-pct').value = item.pct || 10;
+                document.getElementById('edit-eq-labor').value = item.laborText || (item.labor ? String(item.labor) : '');
+                document.getElementById('edit-eq-pct').value = item.pct ?? 10;
+                updatePartsSum('edit-eq');
                 document.getElementById('edit-eq-payment').value = Number(item.payment || 0).toFixed(2);
                 document.getElementById('edit-eq-status').value = item.status;
             } else if (type === 'clientes') {
@@ -705,10 +708,12 @@
                 db[type][index].fault = document.getElementById('edit-eq-fault').value.trim();
                 db[type][index].part = document.getElementById('edit-eq-part').value.trim();
                 db[type][index].desc = document.getElementById('edit-eq-desc').value.trim();
-                db[type][index].cost = parseFloat(document.getElementById('edit-eq-cost').value) || 0;
+                db[type][index].cost = costSum('edit-eq');
+                db[type][index].costText = document.getElementById('edit-eq-cost').value.trim();
                 db[type][index].partsCost = getMontoInputs('edit-eq').parts;
                 db[type][index].partsText = document.getElementById('edit-eq-parts').value.trim();
                 db[type][index].labor = getMontoInputs('edit-eq').labor;
+                db[type][index].laborText = document.getElementById('edit-eq-labor').value.trim();
                 db[type][index].pct = getMontoInputs('edit-eq').pct;
                 db[type][index].payment = getMontoTotal('edit-eq');
                 db[type][index].status = document.getElementById('edit-eq-status').value;
@@ -724,6 +729,7 @@
                 db[type][index].type = document.getElementById('edit-pr-type').value.trim();
             }
 
+            fillBlanks(db[type].find(x => x.id === currentEditId), type);
             saveData(KEYS[type], db[type]);
             updateAllViews();
             closeModal();
@@ -736,7 +742,7 @@
             document.getElementById('eq-sort').addEventListener('change', renderEquipos);
             document.getElementById('eq-status-filter').addEventListener('change', renderEquipos);
             document.getElementById('pr-type-filter').addEventListener('change', renderProveedores);
-            ['eq', 'edit-eq'].forEach(prefix => ['parts', 'labor', 'pct'].forEach(f =>
+            ['eq', 'edit-eq'].forEach(prefix => ['parts', 'labor', 'pct', 'cost'].forEach(f =>
                 document.getElementById(`${prefix}-${f}`).addEventListener('input', () => refreshMonto(prefix))));
             document.getElementById('eq-search').addEventListener('input', renderEquipos);
             document.getElementById('cl-search').addEventListener('input', renderClientes);
@@ -745,7 +751,24 @@
             document.getElementById('proveedorForm').addEventListener('submit', handleAddProveedor);
         }
 
+        // Todo campo de texto que quede vacío se guarda como "-"
+        const BLANK_FIELDS = {
+            equipos: ['owner', 'type', 'plate', 'fault', 'part', 'desc'],
+            clientes: ['name', 'phone', 'email', 'address'],
+            proveedores: ['name', 'contact', 'phone', 'type']
+        };
+        function fillBlanks(obj, kind) {
+            if (obj) (BLANK_FIELDS[kind] || []).forEach(k => { if (!String(obj[k] ?? '').trim()) obj[k] = '-'; });
+            return obj;
+        }
+
+        // Si algo falla al guardar, se avisa en pantalla en lugar de fallar en silencio
         function handleAddEquipo(e) {
+            try { _handleAddEquipo(e); }
+            catch (err) { console.error(err); showToast('Error al guardar el equipo: ' + err.message, 'error'); }
+        }
+
+        function _handleAddEquipo(e) {
             e.preventDefault();
             const newObj = {
                 id: Date.now(),
@@ -756,21 +779,24 @@
                 fault: document.getElementById('eq-fault').value.trim(),
                 part: document.getElementById('eq-part').value.trim(),
                 desc: document.getElementById('eq-desc').value.trim(),
-                cost: parseFloat(document.getElementById('eq-cost').value) || 0,
+                cost: costSum('eq'),
+                costText: document.getElementById('eq-cost').value.trim(),
                 partsCost: getMontoInputs('eq').parts,
                 partsText: document.getElementById('eq-parts').value.trim(),
                 labor: getMontoInputs('eq').labor,
+                laborText: document.getElementById('eq-labor').value.trim(),
                 pct: getMontoInputs('eq').pct,
                 payment: getMontoTotal('eq'),
                 status: document.getElementById('eq-status').value
             };
+            fillBlanks(newObj, 'equipos');
             db.equipos.push(newObj);
             saveData(KEYS.equipos, db.equipos);
             updateAllViews();
             e.target.reset();
             showToast('Equipo registrado exitosamente');
             refreshMonto('eq');
-            if (newObj.owner && !clienteExiste(newObj.owner)) openClientPrompt(newObj.owner);
+            if (newObj.owner && newObj.owner !== '-' && !clienteExiste(newObj.owner)) openClientPrompt(newObj.owner);
         }
 
         function renderEquipos() {
@@ -822,10 +848,12 @@
                     <div class="text-sm bg-gray-50 p-3 rounded-lg mb-3 border border-gray-100 flex-grow">
                         <p class="mb-1"><span class="text-gray-500 font-medium">Falla:</span> ${escapeHTML(eq.fault)}</p>
                         ${eq.part ? `<p class="mb-1"><span class="text-gray-500 font-medium">Repuesto:</span> ${escapeHTML(eq.part)}</p>` : ''}
-                        <p class="mb-1"><span class="text-gray-500 font-medium">Costo Estimado:</span> <span class="font-bold text-gray-800">$${eq.cost.toFixed(2)}</span></p>
+                        <p class="mb-1"><span class="text-gray-500 font-medium">Entregas:</span> <span class="font-bold text-gray-800">$${Number(eq.cost || 0).toFixed(2)}</span></p>
+                        ${eq.costText && /\p{L}/u.test(eq.costText) ? `<p class="mb-1 text-xs text-gray-500">Detalle entregas: ${escapeHTML(eq.costText)}</p>` : ''}
                         <div class="mt-2 pt-2 border-t border-gray-200">
                             ${(eq.partsCost || eq.labor) ? `<p class="mb-1 text-xs text-gray-600">Repuestos: <b>$${Number(eq.partsCost || 0).toFixed(2)}</b> + Mano de obra: <b>$${Number(eq.labor || 0).toFixed(2)}</b> + <b>${Number(eq.pct || 0)}%</b></p>` : ''}
-                            ${eq.partsText && /\p{L}/u.test(eq.partsText) ? `<p class="mb-1 text-xs text-gray-500">Detalle: ${escapeHTML(eq.partsText)}</p>` : ''}
+                            ${eq.partsText && /\p{L}/u.test(eq.partsText) ? `<p class="mb-1 text-xs text-gray-500">Detalle repuestos: ${escapeHTML(eq.partsText)}</p>` : ''}
+                            ${eq.laborText && /\p{L}/u.test(eq.laborText) ? `<p class="mb-1 text-xs text-gray-500">Detalle mano de obra: ${escapeHTML(eq.laborText)}</p>` : ''}
                             <p class="flex items-center justify-between"><span class="text-gray-500 font-medium">Monto a pagar:</span> <span class="font-bold text-emerald-700 text-base">$${Number(eq.payment || 0).toFixed(2)}</span></p>
                         </div>
                         ${eq.desc ? `<div class="mt-2 text-xs text-gray-600 italic border-l-2 border-gray-300 pl-2 py-0.5">${escapeHTML(eq.desc)}</div>` : ''}
@@ -864,9 +892,17 @@
             }, 0);
         }
 
+        function costSum(prefix) {
+            return Math.round(Math.max(0, sumPartsText(document.getElementById(`${prefix}-cost`).value)) * 100) / 100;
+        }
+
         function updatePartsSum(prefix) {
+            const cel = document.getElementById(`${prefix}-cost-sum`);
+            if (cel) cel.textContent = `Suma de entregas: $${costSum(prefix).toFixed(2)}`;
             const el = document.getElementById(`${prefix}-parts-sum`);
             if (el) el.textContent = `Suma de repuestos: $${getMontoInputs(prefix).parts.toFixed(2)}`;
+            const lel = document.getElementById(`${prefix}-labor-sum`);
+            if (lel) lel.textContent = `Suma de mano de obra: $${getMontoInputs(prefix).labor.toFixed(2)}`;
         }
 
         // Recalcula la suma de repuestos y el monto a pagar mientras se escribe
@@ -880,8 +916,8 @@
         function getMontoInputs(prefix) {
             return {
                 parts: Math.round(Math.max(0, sumPartsText(document.getElementById(`${prefix}-parts`).value)) * 100) / 100,
-                labor: Math.max(0, parseFloat(document.getElementById(`${prefix}-labor`).value) || 0),
-                pct: parseInt(document.getElementById(`${prefix}-pct`).value, 10) || 0
+                labor: Math.round(Math.max(0, sumPartsText(document.getElementById(`${prefix}-labor`).value)) * 100) / 100,
+                pct: (p => isFinite(p) && p > 0 ? p : 0)(parseFloat(document.getElementById(`${prefix}-pct`).value))
             };
         }
 
@@ -932,18 +968,18 @@
         function saveClientPrompt(e) {
             e.preventDefault();
             const name = document.getElementById('cp-name').value.trim();
-            if (clienteExiste(name)) {
+            if (name && clienteExiste(name)) {
                 closeClientPrompt();
                 showToast('Ese cliente ya está en el directorio', 'info');
                 return;
             }
-            db.clientes.push({
+            db.clientes.push(fillBlanks({
                 id: Date.now(),
                 name,
                 phone: document.getElementById('cp-phone').value.trim(),
                 email: document.getElementById('cp-email').value.trim(),
                 address: document.getElementById('cp-address').value.trim()
-            });
+            }, 'clientes'));
             saveData(KEYS.clientes, db.clientes);
             updateAllViews();
             closeClientPrompt();
@@ -953,13 +989,13 @@
         // ================= CLIENTES LOGIC =================
         function handleAddCliente(e) {
             e.preventDefault();
-            db.clientes.push({
+            db.clientes.push(fillBlanks({
                 id: Date.now(),
                 name: document.getElementById('cl-name').value.trim(),
                 phone: document.getElementById('cl-phone').value.trim(),
                 email: document.getElementById('cl-email').value.trim(),
                 address: document.getElementById('cl-address').value.trim()
-            });
+            }, 'clientes'));
             saveData(KEYS.clientes, db.clientes);
             updateAllViews();
             e.target.reset();
@@ -1004,13 +1040,13 @@
         // ================= PROVEEDORES LOGIC =================
         function handleAddProveedor(e) {
             e.preventDefault();
-            db.proveedores.push({
+            db.proveedores.push(fillBlanks({
                 id: Date.now(),
                 name: document.getElementById('pr-name').value.trim(),
                 contact: document.getElementById('pr-contact').value.trim(),
                 phone: document.getElementById('pr-phone').value.trim(),
                 type: document.getElementById('pr-type').value.trim()
-            });
+            }, 'proveedores'));
             saveData(KEYS.proveedores, db.proveedores);
             updateAllViews();
             e.target.reset();
@@ -1161,6 +1197,52 @@
             reader.readAsText(file);
         };
 
+        // ================= MODO DEBUG: trabajo sin conexión y sin Firebase =================
+        const DEBUG_PASS = 'maikydebug1234';
+        window.debugMode = false;
+
+        function openDebugPrompt() {
+            document.getElementById('debug-pass').value = '';
+            document.getElementById('debug-error').classList.add('hidden');
+            document.getElementById('debug-overlay').classList.remove('hidden');
+            document.getElementById('debug-pass').focus();
+        }
+
+        function closeDebugPrompt() {
+            document.getElementById('debug-overlay').classList.add('hidden');
+        }
+
+        function submitDebug(e) {
+            e.preventDefault();
+            if (document.getElementById('debug-pass').value !== DEBUG_PASS) {
+                document.getElementById('debug-error').classList.remove('hidden');
+                return;
+            }
+            closeDebugPrompt();
+            enterDebugMode();
+        }
+
+        function enterDebugMode() {
+            window.debugMode = true;
+            if (window.cloudStop) window.cloudStop();   // corta la escucha de Firebase
+            window.cloudPush = null;                     // nada se envía a la nube
+            // Datos propios del modo debug: nunca se mezclan con los de la nube
+            Object.keys(KEYS).forEach(t => { if (!KEYS[t].startsWith('debug_')) KEYS[t] = 'debug_' + KEYS[t]; });
+            loadAllData();
+            updateAllViews();
+            document.getElementById('login-overlay').classList.add('hidden');
+            document.getElementById('debug-btn-home').classList.add('hidden');
+            document.getElementById('sync-user').textContent = 'MODO DEBUG (sin nube)';
+            document.getElementById('sync-dot').className = 'w-2 h-2 rounded-full bg-orange-400';
+            document.getElementById('sync-pill').classList.remove('hidden');
+            showToast('Modo DEBUG activo: sin Firebase, datos solo en este dispositivo');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // En modo debug, "Salir" recarga la página y vuelve al funcionamiento normal
+            document.getElementById('logout-btn').addEventListener('click', () => { if (window.debugMode) location.reload(); });
+        });
+
         // Initialize App
         document.addEventListener('DOMContentLoaded', init);
 
@@ -1175,8 +1257,22 @@
             <p id="login-error" class="text-sm text-red-600 hidden"></p>
             <button type="submit" id="login-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-md transition">Ingresar</button>
         </form>
+    <button type="button" onclick="openDebugPrompt()" class="absolute bottom-2 right-3 text-slate-600 hover:text-slate-300 transition" style="font-size:10px">Modo DEBUG</button>
     </div>
-    <div id="sync-pill" class="hidden fixed bottom-3 right-3 bg-slate-900/90 text-white text-xs rounded-full pl-3 pr-1 py-1 flex items-center gap-2 shadow-lg" style="z-index:40">
+    <button id="debug-btn-home" type="button" onclick="openDebugPrompt()" class="fixed bottom-1 right-2 text-gray-300 hover:text-gray-500 transition" style="font-size:10px;z-index:30">Modo DEBUG</button>
+    <div id="debug-overlay" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center p-4" style="z-index:110">
+        <form class="bg-white rounded-2xl shadow-2xl w-full max-w-xs p-5 space-y-3" onsubmit="submitDebug(event)">
+            <h3 class="font-bold text-gray-800"><i class="fa-solid fa-bug text-orange-500 mr-1"></i> Modo DEBUG</h3>
+            <p class="text-xs text-gray-500">Trabaja sin conexión y sin Firebase. Los datos quedan solo en este dispositivo.</p>
+            <input type="password" id="debug-pass" required autocomplete="off" placeholder="Contraseña" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none">
+            <p id="debug-error" class="text-xs text-red-600 hidden">Contraseña incorrecta.</p>
+            <div class="flex justify-end gap-2">
+                <button type="button" onclick="closeDebugPrompt()" class="px-3 py-2 text-sm text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200">Cancelar</button>
+                <button type="submit" class="px-3 py-2 text-sm text-white bg-orange-600 rounded-md hover:bg-orange-700">Entrar</button>
+            </div>
+        </form>
+    </div>
+    <div id="sync-pill" class="hidden fixed bottom-6 right-3 bg-slate-900/90 text-white text-xs rounded-full pl-3 pr-1 py-1 flex items-center gap-2 shadow-lg" style="z-index:40">
         <span id="sync-dot" class="w-2 h-2 rounded-full bg-green-400"></span><span id="sync-user" class="truncate" style="max-width:140px"></span>
         <button id="logout-btn" type="button" class="bg-slate-700 hover:bg-slate-600 rounded-full px-2 py-1">Salir</button>
     </div>
@@ -1210,7 +1306,7 @@ const st = o => JSON.stringify(o, (k, v) => v && typeof v === 'object' && !Array
 // Envía a la nube solo lo que cambió (altas, ediciones y borrados)
 window.cloudPush = (key, arr) => {
     const type = types.find(t => KEYS[t] === key);
-    if (!auth.currentUser || !type) return;
+    if (window.debugMode || !auth.currentUser || !type) return;
     const prev = known[type] || new Map(), next = new Map(), ops = [];
     arr.forEach(it => {
         if (it.id === undefined || it.id === null) return;
@@ -1243,6 +1339,7 @@ function listen() {
     types.forEach(t => { try { localBackup[t] = JSON.parse(localStorage.getItem(KEYS[t])) || []; } catch (e) { localBackup[t] = []; } });
     types.forEach(type => {
         unsubs.push(onSnapshot(collection(fs, type), snap => {
+            if (window.debugMode) return;
             const arr = snap.docs.map(d => d.data()).sort((a, b) => (a.id || 0) - (b.id || 0));
             known[type] = new Map(arr.map(it => [String(it.id), st(it)]));
             db[type] = arr;
@@ -1254,7 +1351,9 @@ function listen() {
     });
 }
 
-function setOnline() { $('sync-dot').className = 'w-2 h-2 rounded-full ' + (navigator.onLine ? 'bg-green-400' : 'bg-orange-400'); $('sync-dot').title = navigator.onLine ? 'Conectado' : 'Sin conexión (se sincroniza al volver)'; }
+window.cloudStop = () => { unsubs.forEach(f => f()); unsubs = []; };
+function setOnline() {
+    if (window.debugMode) return; $('sync-dot').className = 'w-2 h-2 rounded-full ' + (navigator.onLine ? 'bg-green-400' : 'bg-orange-400'); $('sync-dot').title = navigator.onLine ? 'Conectado' : 'Sin conexión (se sincroniza al volver)'; }
 window.addEventListener('online', setOnline);
 window.addEventListener('offline', setOnline);
 
@@ -1270,8 +1369,9 @@ function start() {
         }
         btn.disabled = false; btn.textContent = 'Ingresar';
     });
-    $('logout-btn').addEventListener('click', () => signOut(auth));
+    $('logout-btn').addEventListener('click', () => { if (!window.debugMode) signOut(auth); });
     onAuthStateChanged(auth, user => {
+        if (window.debugMode) return;
         unsubs.forEach(f => f()); unsubs = [];
         types.forEach(t => { ready[t] = false; delete known[t]; });
         migrationChecked = false;

@@ -24,6 +24,15 @@
         .modal-exit { opacity: 1; transform: scale(1); }
         .modal-exit-active { opacity: 0; transform: scale(0.95); transition: opacity 150ms ease-in, transform 150ms ease-in; }
     </style>
+<style id="print-page-style"></style>
+    <style>
+        #print-area { display: none; }
+        @media print {
+            html, body { height: auto !important; overflow: visible !important; background: #fff !important; display: block !important; }
+            body > *:not(#print-area) { display: none !important; }
+            #print-area { display: block !important; font-family: 'Courier New', Courier, monospace; color: #000; line-height: 1.35; padding: 2mm 0 8mm; word-break: break-word; }
+        }
+    </style>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased h-screen overflow-hidden flex flex-col md:flex-row">
 
@@ -72,7 +81,7 @@
         </nav>
         
         <div class="p-4 border-t border-gray-200 text-xs text-gray-400 text-center">
-            V Beta5.2 - @mmaatteeooddll en instagram!
+            V 2.1 - LocalHost
         </div>
     </aside>
 
@@ -237,6 +246,7 @@
                     <div class="flex justify-between items-center mb-3">
                         <h2 class="font-semibold text-gray-800">Directorio de Reparaciones</h2>
                         <div class="flex gap-2 flex-wrap justify-end">
+                            <select id="print-width" title="Ancho del papel de la impresora" class="rounded-md border-gray-300 border px-2 py-1 text-sm bg-white cursor-pointer outline-none"><option value="80">Papel 80 mm</option><option value="58">Papel 58 mm</option></select>
                             <select id="eq-status-filter" class="rounded-md border-gray-300 border px-2 py-1 text-sm bg-white cursor-pointer outline-none">
                                 <option value="">Todos los estados</option>
                                 <option value="No revisado">No revisado</option>
@@ -454,6 +464,8 @@
             </div>
         </div>
     </div>
+
+    <div id="print-area"></div>
 
     <!-- Modal: Historial del cliente -->
     <div id="history-overlay" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center backdrop-blur-sm p-4" style="z-index:55" onclick="if(event.target===this) closeHistorial()">
@@ -823,6 +835,7 @@
                 status: document.getElementById('eq-status').value
             };
             fillBlanks(newObj, 'equipos');
+            newObj.orderNo = nextOrderNo();
             db.equipos.push(newObj);
             saveData(KEYS.equipos, db.equipos);
             updateAllViews();
@@ -896,6 +909,9 @@
                     
                     <!-- Acción Footer -->
                     <div class="pt-3 border-t border-gray-100 flex justify-end gap-2">
+                        <button onclick="printBoleta(${eq.id})" class="px-3 py-1.5 text-sm rounded-md font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors flex items-center gap-1">
+                            <i class="fa-solid fa-print"></i> Imprimir
+                        </button>
                         <button onclick="openEditModal('equipos', ${eq.id})" class="px-3 py-1.5 text-sm rounded-md font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors flex items-center gap-1">
                             <i class="fa-solid fa-pen-to-square"></i> Editar
                         </button>
@@ -1162,12 +1178,87 @@
         }
 
         // --- Generic Delete logic ---
+        // ================= BOLETA IMPRIMIBLE (ticket 58 u 80 mm) =================
+        const NOMBRE_TALLER = 'Taller de Luis';   // Cambia este texto por el nombre de tu taller
+
+        // Número de orden correlativo. Nunca se repite: se considera el mayor número visto en equipos,
+        // en el historial de retirados y el último usado en este dispositivo.
+        function ensureOrderNumbers() {
+            const lastKey = KEYS.equipos + '_last_order';
+            const num = x => Number(x && x.orderNo) || 0;
+            let max = Math.max(
+                db.equipos.reduce((m, e) => Math.max(m, num(e)), 0),
+                db.clientes.reduce((m, c) => (c.history || []).reduce((mm, h) => Math.max(mm, num(h)), m), 0),
+                Number(localStorage.getItem(lastKey)) || 0
+            );
+            const missing = db.equipos.filter(e => !e.orderNo).sort((a, b) => a.timestamp - b.timestamp);
+            missing.forEach(e => { e.orderNo = ++max; });
+            if (missing.length) saveData(KEYS.equipos, db.equipos);
+            try { localStorage.setItem(lastKey, String(max)); } catch (e) {}
+            return max;
+        }
+
+        function nextOrderNo() {
+            const n = ensureOrderNumbers() + 1;
+            try { localStorage.setItem(KEYS.equipos + '_last_order', String(n)); } catch (e) {}
+            return n;
+        }
+
+        // La boleta NO incluye costo de repuestos, mano de obra ni porcentaje: solo costo total, entregas y saldo
+        function printBoleta(id) {
+            const eq = db.equipos.find(e => e.id === id);
+            if (!eq) return;
+            ensureOrderNumbers();
+            const w = Number(document.getElementById('print-width').value) === 58 ? 58 : 80;
+            const has = v => v && String(v).trim() && String(v).trim() !== '-';
+            const line = (label, v) => `<div><b>${label}:</b> ${escapeHTML(v)}</div>`;
+            const sep = '<div style="border-top:1px dashed #000;margin:2mm 0"></div>';
+            const balance = eqBalance(eq);
+            const area = document.getElementById('print-area');
+            document.getElementById('print-page-style').textContent = `@page { size: ${w}mm auto; margin: 0; }`;
+            area.style.width = (w === 58 ? 48 : 72) + 'mm';
+            area.style.fontSize = (w === 58 ? 11 : 12) + 'px';
+            area.innerHTML = `
+                <div style="text-align:center">
+                    <div style="font-weight:bold;font-size:1.25em">${escapeHTML(NOMBRE_TALLER)}</div>
+                    <div>COMPROBANTE DE EQUIPO</div>
+                    <div>Orden N° ${eq.orderNo}</div>
+                </div>
+                ${sep}
+                ${line('Fecha', new Date(eq.timestamp).toLocaleDateString())}
+                ${line('Dueño', eq.owner)}
+                ${line('Equipo', eq.type)}
+                ${line('Matrícula', eq.plate)}
+                ${sep}
+                ${line('Falla', eq.fault)}
+                ${has(eq.desc) ? `<div><b>Descripción:</b> <span style="white-space:pre-line">${escapeHTML(eq.desc)}</span></div>` : ''}
+                ${has(eq.part) ? line('Repuesto', eq.part) : ''}
+                ${sep}
+                ${line('Costo total', money(eqTotal(eq)))}
+                ${line('Entregas', money(Number(eq.cost || 0)))}
+                ${has(eq.costText) && /\p{L}/u.test(eq.costText) ? `<div style="font-size:.9em">${escapeHTML(eq.costText)}</div>` : ''}
+                <div style="margin-top:2mm;font-weight:bold;font-size:1.2em">MONTO A PAGAR: ${money(balance)}</div>
+                ${balance < 0 ? '<div style="font-size:.9em">Saldo a favor del cliente</div>' : ''}
+                ${sep}
+                <div style="margin-top:8mm">Firma: ______________</div>
+                <div style="text-align:center;margin-top:3mm">¡Gracias por su confianza!</div>`;
+            setTimeout(() => window.print(), 50);
+        }
+
+        window.addEventListener('afterprint', () => { document.getElementById('print-area').innerHTML = ''; });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const sel = document.getElementById('print-width');
+            try { sel.value = localStorage.getItem('taller_print_width') || '80'; } catch (e) {}
+            sel.addEventListener('change', () => { try { localStorage.setItem('taller_print_width', sel.value); } catch (e) {} });
+        });
+
         // ================= HISTORIAL DE CLIENTES =================
         let histClientId = null;
         function fmtFecha(t) { return t ? new Date(t).toLocaleDateString('es-UY') : '-'; }
 
         function snapOf(eq) {
-            const o = { id: eq.id, owner: eq.owner, type: eq.type, plate: eq.plate, fault: eq.fault, status: eq.status, timestamp: eq.timestamp, payment: eq.payment, total: eq.total ?? eq.payment, cost: eq.cost };
+            const o = { id: eq.id, owner: eq.owner, type: eq.type, plate: eq.plate, fault: eq.fault, status: eq.status, timestamp: eq.timestamp, payment: eq.payment, total: eq.total ?? eq.payment, cost: eq.cost, orderNo: eq.orderNo };
             Object.keys(o).forEach(k => { if (o[k] === undefined) o[k] = ''; });
             return o;
         }

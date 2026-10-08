@@ -40,7 +40,7 @@
     <header class="md:hidden bg-slate-900 text-white p-4 flex justify-between items-center shadow-md z-20">
         <div class="flex items-center gap-2">
             <i class="fa-solid fa-wrench text-blue-400"></i>
-            <span class="font-bold text-lg">Gestor de Taller</span>
+            <span class="font-bold text-lg">AutoGestión Pro</span>
         </div>
         <button id="mobileMenuBtn" class="text-gray-300 hover:text-white focus:outline-none">
             <i class="fa-solid fa-bars text-2xl"></i>
@@ -81,7 +81,7 @@
         </nav>
         
         <div class="p-4 border-t border-gray-200 text-xs text-gray-400 text-center">
-            Beta 6.0 - @mmaatteeooddll em instagram!!
+            V 2.1 - LocalHost
         </div>
     </aside>
 
@@ -201,6 +201,7 @@
                         <div class="px-5 py-4 border-b border-gray-100"><h2 class="font-semibold text-gray-800">Nuevo Ingreso</h2></div>
                         <form id="equipoForm" class="p-5 space-y-4">
                             <div><label class="block text-xs font-medium text-gray-700 mb-1">Dueño</label><input type="text" id="eq-owner" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500 outline-none"></div>
+<div><label class="block text-xs font-medium text-gray-700 mb-1">Teléfono</label><input type="text" id="eq-phone" autocomplete="off" inputmode="tel" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
                             <div class="grid grid-cols-2 gap-3">
                                 <div><label class="block text-xs font-medium text-gray-700 mb-1">Equipo</label><input type="text" id="eq-type" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
                                 <div><label class="block text-xs font-medium text-gray-700 mb-1">Matrícula</label><input type="text" id="eq-plate" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm uppercase focus:ring-blue-500 outline-none"></div>
@@ -263,7 +264,7 @@
                     </div>
                     <div class="relative mb-4">
                         <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none"></i>
-                        <input type="search" id="eq-search" placeholder="Buscar por nombre del dueño o matrícula..." autocomplete="off" class="w-full rounded-md border-gray-300 border pl-9 pr-3 py-2 text-sm bg-white focus:ring-blue-500 focus:border-blue-500 outline-none">
+                        <input type="search" id="eq-search" placeholder="Buscar por dueño, matrícula o teléfono..." autocomplete="off" class="w-full rounded-md border-gray-300 border pl-9 pr-3 py-2 text-sm bg-white focus:ring-blue-500 focus:border-blue-500 outline-none">
                     </div>
                     <div id="equiposList" class="space-y-4 overflow-y-auto pb-10">
                         <!-- Cards injected by JS -->
@@ -396,6 +397,7 @@
                 <!-- EDIT FORM: EQUIPOS -->
                 <form id="editForm-equipos" class="hidden space-y-4" onsubmit="saveEdit(event, 'equipos')">
                     <div><label class="block text-xs font-medium text-gray-700 mb-1">Dueño</label><input type="text" id="edit-eq-owner" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
+<div><label class="block text-xs font-medium text-gray-700 mb-1">Teléfono</label><input type="text" id="edit-eq-phone" autocomplete="off" inputmode="tel" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
                     <div class="grid grid-cols-2 gap-3">
                         <div><label class="block text-xs font-medium text-gray-700 mb-1">Equipo</label><input type="text" id="edit-eq-type" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
                         <div><label class="block text-xs font-medium text-gray-700 mb-1">Matrícula</label><input type="text" id="edit-eq-plate" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm uppercase focus:ring-blue-500 outline-none"></div>
@@ -668,6 +670,7 @@
                 titleText = "Editar Equipo";
                 document.getElementById('editForm-equipos').classList.remove('hidden');
                 document.getElementById('edit-eq-owner').value = item.owner;
+                document.getElementById('edit-eq-phone').value = item.phone && item.phone !== '-' ? item.phone : '';
                 document.getElementById('edit-eq-type').value = item.type;
                 document.getElementById('edit-eq-plate').value = item.plate;
                 document.getElementById('edit-eq-fault').value = item.fault;
@@ -737,6 +740,7 @@
 
             if (type === 'equipos') {
                 db[type][index].owner = document.getElementById('edit-eq-owner').value.trim();
+                db[type][index].phone = document.getElementById('edit-eq-phone').value.trim();
                 db[type][index].type = document.getElementById('edit-eq-type').value.trim();
                 db[type][index].plate = document.getElementById('edit-eq-plate').value.trim().toUpperCase();
                 db[type][index].fault = document.getElementById('edit-eq-fault').value.trim();
@@ -797,7 +801,7 @@
 
         // Todo campo de texto que quede vacío se guarda como "-"
         const BLANK_FIELDS = {
-            equipos: ['owner', 'type', 'plate', 'fault', 'part', 'desc'],
+            equipos: ['owner', 'phone', 'type', 'plate', 'fault', 'part', 'desc'],
             clientes: ['name', 'phone', 'email', 'address'],
             proveedores: ['name', 'contact', 'phone', 'type']
         };
@@ -818,6 +822,7 @@
                 id: Date.now(),
                 timestamp: Date.now(),
                 owner: document.getElementById('eq-owner').value.trim(),
+                phone: document.getElementById('eq-phone').value.trim(),
                 type: document.getElementById('eq-type').value.trim(),
                 plate: document.getElementById('eq-plate').value.trim().toUpperCase(),
                 fault: document.getElementById('eq-fault').value.trim(),
@@ -842,7 +847,7 @@
             e.target.reset();
             showToast('Equipo registrado exitosamente');
             refreshMonto('eq');
-            if (newObj.owner && newObj.owner !== '-' && !clienteExiste(newObj.owner)) openClientPrompt(newObj.owner);
+            if (newObj.owner && newObj.owner !== '-' && !clienteExiste(newObj.owner)) openClientPrompt(newObj.owner, newObj.phone);
         }
 
         function renderEquipos() {
@@ -856,12 +861,14 @@
             document.getElementById('stat-arreglado').textContent = db.equipos.filter(e => e.status === 'Arreglado').length;
 
             // Filtro por nombre del dueño o matrícula (la matrícula también coincide sin espacios ni guiones)
-            const q = normalizeText(document.getElementById('eq-search').value);
+            const rawQ = document.getElementById('eq-search').value;
+            const q = normalizeText(rawQ);
             const qPlate = q.replace(/[\s-]/g, '');
             let sorted = db.equipos.filter(eq => {
                 if (!q) return true;
                 const plate = normalizeText(eq.plate);
                 return normalizeText(eq.owner).includes(q) ||
+                       phoneMatches(eq.phone, rawQ) ||
                        plate.includes(q) ||
                        (qPlate && plate.replace(/[\s-]/g, '').includes(qPlate));
             });
@@ -884,6 +891,7 @@
                         <div>
                             <h3 class="font-bold text-gray-800 text-lg">${escapeHTML(eq.owner)} <span class="text-xs bg-gray-100 border border-gray-200 px-2 py-0.5 rounded font-mono ml-2">${escapeHTML(eq.plate)}</span></h3>
                             <p class="text-sm text-gray-500">${new Date(eq.timestamp).toLocaleDateString()} - <span class="font-medium text-gray-700">${escapeHTML(eq.type)}</span></p>
+                            ${eq.phone && eq.phone !== '-' ? `<p class="text-sm text-gray-500"><i class="fa-solid fa-phone text-xs mr-1"></i>${escapeHTML(eq.phone)}</p>` : ''}
                         </div>
                         <select onchange="updateEqStatus(${eq.id}, this.value)" class="text-sm font-semibold rounded-full border px-3 py-1 cursor-pointer focus:outline-none ${statusConf[eq.status]} appearance-none pr-8 relative">
                             <option value="No revisado" ${eq.status === 'No revisado' ? 'selected' : ''}>No revisado</option>
@@ -1007,10 +1015,11 @@
             return db.clientes.some(cl => normalizeText(cl.name) === n);
         }
 
-        function openClientPrompt(ownerName) {
+        function openClientPrompt(ownerName, phone) {
             document.getElementById('cp-owner-label').textContent = ownerName;
             document.getElementById('cp-name').value = ownerName;
             ['cp-phone', 'cp-email', 'cp-address'].forEach(id => document.getElementById(id).value = '');
+            document.getElementById('cp-phone').value = phone && phone !== '-' ? phone : '';
             document.getElementById('cp-step-ask').classList.remove('hidden');
             document.getElementById('cp-step-form').classList.add('hidden');
             document.getElementById('client-prompt-overlay').classList.remove('hidden');
@@ -1248,6 +1257,7 @@
         window.addEventListener('afterprint', () => { document.getElementById('print-area').innerHTML = ''; });
 
         document.addEventListener('DOMContentLoaded', () => {
+            ['eq-phone', 'edit-eq-phone'].forEach(id => document.getElementById(id).addEventListener('input', e => { delete e.target.dataset.auto; }));
             const sel = document.getElementById('print-width');
             try { sel.value = localStorage.getItem('taller_print_width') || '80'; } catch (e) {}
             sel.addEventListener('change', () => { try { localStorage.setItem('taller_print_width', sel.value); } catch (e) {} });
@@ -1367,6 +1377,16 @@
         };
 
         // Nombres únicos de dueños: directorio de clientes + dueños ya cargados en equipos
+        // Teléfono conocido de un dueño: primero el del directorio, si no el del equipo más reciente
+        function phoneFor(nm) {
+            const k = normalizeText(nm);
+            const ok = p => p && String(p).trim() && String(p).trim() !== '-';
+            const cl = db.clientes.find(c => normalizeText(c.name) === k && ok(c.phone));
+            if (cl) return String(cl.phone).trim();
+            const eq = db.equipos.filter(e => normalizeText(e.owner) === k && ok(e.phone)).sort((a, b) => b.timestamp - a.timestamp)[0];
+            return eq ? String(eq.phone).trim() : '';
+        }
+
         function ownerNames() {
             const seen = new Map();
             [...db.clientes.map(c => c.name), ...db.equipos.map(e => e.owner)].forEach(nm => {
@@ -1388,7 +1408,14 @@
             box.style.zIndex = '70';
             wrap.appendChild(box);
             let items = [], active = -1;
-            const pick = nm => { input.value = nm; box.classList.add('hidden'); };
+            const fillPhone = nm => {
+                const ph = document.getElementById(inputId.replace('owner', 'phone'));
+                const found = ph ? phoneFor(nm) : '';
+                // No pisa un teléfono que el usuario escribió a mano
+                if (found && (!ph.value.trim() || ph.dataset.auto === '1')) { ph.value = found; ph.dataset.auto = '1'; }
+            };
+            const pick = nm => { input.value = nm; box.classList.add('hidden'); fillPhone(nm); };
+            input.addEventListener('change', () => fillPhone(input.value));
             const paint = () => {
                 box.innerHTML = items.map((nm, i) => {
                     const k = normalizeText(nm);

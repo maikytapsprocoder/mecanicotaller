@@ -23,6 +23,9 @@
         .modal-enter-active { opacity: 1; transform: scale(1); transition: opacity 200ms ease-out, transform 200ms ease-out; }
         .modal-exit { opacity: 1; transform: scale(1); }
         .modal-exit-active { opacity: 0; transform: scale(0.95); transition: opacity 150ms ease-in, transform 150ms ease-in; }
+    
+        /* Pantallas anchas: el formulario queda a la vista y tiene su propio scroll si es más alto que la ventana */
+        @media (min-width: 1024px) { .sticky-form { max-height: calc(100vh - 2rem); overflow-y: auto; } }
     </style>
 <style id="print-page-style"></style>
     <style>
@@ -73,6 +76,14 @@
                 <i class="fa-solid fa-boxes-packing w-5 text-center"></i>
                 <span>Proveedores</span>
             </button>
+            <button onclick="navigate('entregados')" id="nav-entregados" class="nav-link flex items-center gap-3 px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition-colors text-left w-full">
+                <i class="fa-solid fa-handshake w-5 text-center"></i>
+                <span>Equipos Entregados</span>
+            </button>
+            <button onclick="navigate('papelera')" id="nav-papelera" class="nav-link flex items-center gap-3 px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition-colors text-left w-full">
+                <i class="fa-solid fa-trash-can w-5 text-center"></i>
+                <span>Papelera <span id="trash-count" class="ml-1 text-xs bg-gray-200 text-gray-600 rounded-full px-2 py-0.5 hidden"></span></span>
+            </button>
             <div class="my-2 border-t border-gray-100"></div>
             <button onclick="navigate('respaldo')" id="nav-respaldo" class="nav-link flex items-center gap-3 px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition-colors text-left w-full">
                 <i class="fa-solid fa-database w-5 text-center"></i>
@@ -81,7 +92,7 @@
         </nav>
         
         <div class="p-4 border-t border-gray-200 text-xs text-gray-400 text-center">
-          Beta 6.1 - @mmaatteeooddll en instagram!
+            V 2.1 - LocalHost
         </div>
     </aside>
 
@@ -90,6 +101,7 @@
         
         <!-- ================= VIEW: INICIO ================= -->
         <div id="view-inicio" class="view-section animate-fade-in block">
+            <button id="backup-alert" type="button" onclick="navigate('respaldo')" class="hidden w-full mb-6 px-4 py-4 rounded-xl border-2 border-red-500 bg-red-50 text-red-600 font-extrabold text-lg md:text-xl text-left hover:bg-red-100 transition-colors flex items-center gap-3"><i class="fa-solid fa-triangle-exclamation text-2xl"></i><span id="backup-alert-text"></span></button>
             <div class="mb-8">
                 <h1 class="text-3xl font-bold text-gray-800">Bienvenido, Luis</h1>
                 <p class="text-gray-500 mt-2">Selecciona un módulo para comenzar a trabajar.</p>
@@ -197,7 +209,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Form Column -->
                 <div class="lg:col-span-1">
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 sticky top-4">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 sticky top-4 sticky-form">
                         <div class="px-5 py-4 border-b border-gray-100"><h2 class="font-semibold text-gray-800">Nuevo Ingreso</h2></div>
                         <form id="equipoForm" class="p-5 space-y-4">
                             <div><label class="block text-xs font-medium text-gray-700 mb-1">Dueño</label><input type="text" id="eq-owner" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500 outline-none"></div>
@@ -247,7 +259,6 @@
                     <div class="flex justify-between items-center mb-3">
                         <h2 class="font-semibold text-gray-800">Directorio de Reparaciones</h2>
                         <div class="flex gap-2 flex-wrap justify-end">
-                            <select id="print-width" title="Ancho del papel de la impresora" class="rounded-md border-gray-300 border px-2 py-1 text-sm bg-white cursor-pointer outline-none"><option value="80">Papel 80 mm</option><option value="58">Papel 58 mm</option></select>
                             <select id="eq-status-filter" class="rounded-md border-gray-300 border px-2 py-1 text-sm bg-white cursor-pointer outline-none">
                                 <option value="">Todos los estados</option>
                                 <option value="No revisado">No revisado</option>
@@ -282,7 +293,7 @@
             
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-1">
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 sticky top-4">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 sticky top-4 sticky-form">
                         <div class="px-5 py-4 border-b border-gray-100"><h2 class="font-semibold text-gray-800">Nuevo Cliente</h2></div>
                         <form id="clienteForm" class="p-5 space-y-4">
                             <div><label class="block text-xs font-medium text-gray-700 mb-1">Nombre Completo</label><input type="text" id="cl-name" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none"></div>
@@ -314,7 +325,7 @@
             
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-1">
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 sticky top-4">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 sticky top-4 sticky-form">
                         <div class="px-5 py-4 border-b border-gray-100"><h2 class="font-semibold text-gray-800">Nuevo Proveedor</h2></div>
                         <form id="proveedorForm" class="p-5 space-y-4">
                             <div><label class="block text-xs font-medium text-gray-700 mb-1">Empresa / Nombre</label><input type="text" id="pr-name" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none"></div>
@@ -341,6 +352,27 @@
         </div>
 
         <!-- ================= VIEW: RESPALDO ================= -->
+        <div id="view-entregados" class="view-section hidden animate-fade-in">
+            <div class="mb-4">
+                <h1 class="text-2xl font-bold text-gray-800">Equipos Entregados</h1>
+                <p class="text-gray-500 text-sm mt-1">Equipos que ya se entregaron a sus dueños. Quedan en el historial del cliente y puedes devolverlos al listado si hace falta.</p>
+                <p id="deliv-count" class="text-xs text-gray-400 mt-1"></p>
+            </div>
+            <input type="search" id="deliv-search" oninput="renderEntregados()" placeholder="Buscar por dueño, equipo, matrícula o teléfono..." autocomplete="off" class="w-full md:w-96 mb-4 rounded-md border-gray-300 border px-3 py-2 text-sm bg-white outline-none focus:ring-blue-500 focus:border-blue-500">
+            <div id="deliv-list" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+        </div>
+
+        <div id="view-papelera" class="view-section hidden animate-fade-in">
+            <div class="mb-6 flex items-start justify-between gap-3 flex-wrap">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800">Papelera</h1>
+                    <p class="text-gray-500 text-sm mt-1">Los equipos eliminados se guardan aquí 30 días. Puedes recuperarlos o borrarlos para siempre.</p>
+                </div>
+                <button type="button" onclick="vaciarPapelera()" class="px-3 py-2 text-sm rounded-md font-medium text-red-600 bg-red-50 hover:bg-red-100 transition-colors">Vaciar papelera</button>
+            </div>
+            <div id="trash-list" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+        </div>
+
         <div id="view-respaldo" class="view-section hidden animate-fade-in">
             <div class="mb-6">
                 <h1 class="text-2xl font-bold text-gray-800">Respaldo y Configuración</h1>
@@ -524,11 +556,13 @@
         const KEYS = {
             equipos: 'taller_equipos',
             clientes: 'taller_clientes',
-            proveedores: 'taller_proveedores'
+            proveedores: 'taller_proveedores',
+            papelera: 'taller_papelera',
+            entregados: 'taller_entregados'
         };
 
         // Global State
-        let db = { equipos: [], clientes: [], proveedores: [] };
+        let db = { equipos: [], clientes: [], proveedores: [], papelera: [], entregados: [] };
         
         // Modal State
         let currentEditId = null;
@@ -559,6 +593,8 @@
             db.equipos = JSON.parse(localStorage.getItem(KEYS.equipos)) || [];
             db.clientes = JSON.parse(localStorage.getItem(KEYS.clientes)) || [];
             db.proveedores = JSON.parse(localStorage.getItem(KEYS.proveedores)) || [];
+            db.papelera = JSON.parse(localStorage.getItem(KEYS.papelera)) || [];
+            db.entregados = JSON.parse(localStorage.getItem(KEYS.entregados)) || [];
         }
 
         function saveData(key, dataArray) {
@@ -570,6 +606,9 @@
             renderEquipos();
             renderClientes();
             renderProveedores();
+            renderPapelera();
+            renderEntregados();
+            updateBackupAlert();
             updateHomeStats();
         }
 
@@ -594,6 +633,8 @@
             targetView.classList.remove('hidden');
             targetView.classList.add('block');
             document.getElementById(`nav-${viewName}`).classList.add('active');
+            if (viewName === 'papelera') { purgeTrash(); renderPapelera(); }
+            if (viewName === 'entregados') renderEntregados();
             const dbtn = document.getElementById('debug-btn-home');
             if (dbtn) dbtn.classList.toggle('hidden', viewName !== 'inicio' || window.debugMode);
 
@@ -917,6 +958,7 @@
                     
                     <!-- Acción Footer -->
                     <div class="pt-3 border-t border-gray-100 flex justify-end gap-2">
+                        <button onclick="entregarEquipo(${eq.id})" class="px-3 py-1.5 text-sm rounded-md font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition-colors flex items-center gap-1"><i class="fa-solid fa-handshake"></i> Entregar</button>
                         <button onclick="printBoleta(${eq.id})" class="px-3 py-1.5 text-sm rounded-md font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors flex items-center gap-1">
                             <i class="fa-solid fa-print"></i> Imprimir
                         </button>
@@ -1218,7 +1260,7 @@
             const eq = db.equipos.find(e => e.id === id);
             if (!eq) return;
             ensureOrderNumbers();
-            const w = Number(document.getElementById('print-width').value) === 58 ? 58 : 80;
+            const w = 80; // ancho de papel fijo (80 mm)
             const has = v => v && String(v).trim() && String(v).trim() !== '-';
             const line = (label, v) => `<div><b>${label}:</b> ${escapeHTML(v)}</div>`;
             const sep = '<div style="border-top:1px dashed #000;margin:2mm 0"></div>';
@@ -1258,9 +1300,6 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             ['eq-phone', 'edit-eq-phone'].forEach(id => document.getElementById(id).addEventListener('input', e => { delete e.target.dataset.auto; }));
-            const sel = document.getElementById('print-width');
-            try { sel.value = localStorage.getItem('taller_print_width') || '80'; } catch (e) {}
-            sel.addEventListener('change', () => { try { localStorage.setItem('taller_print_width', sel.value); } catch (e) {} });
         });
 
         // ================= HISTORIAL DE CLIENTES =================
@@ -1276,58 +1315,48 @@
         // live: equipos agregados a mano + los que coinciden por nombre. gone: ya no están en el listado (retirados)
         function historyOf(cl) {
             const key = normalizeText(cl.name), saved = cl.history || [];
-            const live = db.equipos.filter(e => saved.some(h => h.id === e.id) ||
-                (key && key !== '-' && normalizeText(e.owner) === key && !db.clientes.some(c => c.id !== cl.id && (c.history || []).some(h => h.id === e.id))));
-            const gone = saved.filter(h => !db.equipos.some(e => e.id === h.id));
-            return { live, gone };
-        }
-
-        // Al eliminar un equipo del listado, queda guardado en el historial de su cliente como retirado
-        function archiveToHistory(id) {
-            const eq = db.equipos.find(e => e.id === id);
-            if (!eq) return;
-            let touched = false;
-            db.clientes.forEach(c => {
-                if (historyOf(c).live.some(e => e.id === id)) {
-                    c.history = (c.history || []).filter(h => h.id !== id).concat(snapOf(eq));
-                    touched = true;
-                }
-            });
-            if (touched) saveData(KEYS.clientes, db.clientes);
+            const mine = e => saved.some(h => h.id === e.id) ||
+                (key && key !== '-' && normalizeText(e.owner) === key && !db.clientes.some(c => c.id !== cl.id && (c.history || []).some(h => h.id === e.id)));
+            const live = db.equipos.filter(mine);
+            const delivered = db.entregados.filter(mine).sort((a, b) => (b.deliveredAt || 0) - (a.deliveredAt || 0));
+            // registros antiguos: equipos que ya no están en ninguna lista (ni en la papelera)
+            const gone = saved.filter(h => ![db.equipos, db.entregados, db.papelera].some(l => l.some(e => e.id === h.id)));
+            return { live, delivered, gone };
         }
 
         function renderHistorial() {
             const cl = db.clientes.find(c => c.id === histClientId);
             if (!cl) return;
-            const key = normalizeText(cl.name), { live, gone } = historyOf(cl);
+            const key = normalizeText(cl.name), { live, delivered, gone } = historyOf(cl);
             const saved = id => (cl.history || []).some(h => h.id === id);
             const card = e => `<div class="border border-gray-200 rounded-lg p-3 text-sm">
                 <div class="flex items-center justify-between gap-2"><span class="font-semibold text-gray-800">${escapeHTML(e.type)} <span class="text-xs bg-gray-100 border border-gray-200 px-2 py-0.5 rounded font-mono ml-1">${escapeHTML(e.plate)}</span></span><span class="text-xs font-semibold rounded-full border px-2 py-0.5 ${statusConf[e.status] || ''}">${escapeHTML(e.status)}</span></div>
                 <p class="text-gray-600 mt-1">${escapeHTML(e.fault)}</p>
                 ${normalizeText(e.owner) !== key ? `<p class="text-xs text-orange-600 mt-1">Anotado como "${escapeHTML(e.owner)}"</p>` : ''}
-                <div class="flex items-center justify-between gap-2 mt-1"><p class="text-xs text-gray-500">Ingresó el ${fmtFecha(e.timestamp)}. Monto a pagar: ${money(eqBalance(e))}</p>${saved(e.id) ? `<button type="button" onclick="removeFromHistory(${e.id})" class="shrink-0 text-xs text-red-600 hover:underline">Quitar del historial</button>` : ''}</div>
+                <div class="flex items-center justify-between gap-2 mt-1"><p class="text-xs text-gray-500">Ingresó el ${fmtFecha(e.timestamp)}${e.deliveredAt ? `. Entregado el ${fmtFecha(e.deliveredAt)}` : ''}. Monto a pagar: ${money(eqBalance(e))}</p>${saved(e.id) ? `<button type="button" onclick="removeFromHistory(${e.id})" class="shrink-0 text-xs text-red-600 hover:underline">Quitar del historial</button>` : ''}</div>
             </div>`;
             const block = (title, arr, empty) => `<div><h4 class="text-sm font-semibold text-gray-700 mb-2">${title} (${arr.length})</h4>` +
                 (arr.length ? `<div class="space-y-2">${arr.map(card).join('')}</div>` : `<p class="text-sm text-gray-400">${empty}</p>`) + '</div>';
-            const total = live.length + gone.length;
+            const total = live.length + delivered.length + gone.length;
             document.getElementById('hist-sub').textContent = `${cl.name}: ${total} ${total === 1 ? 'equipo registrado' : 'equipos registrados'}`;
             document.getElementById('hist-body').innerHTML =
                 block('En el local', live, 'No tiene equipos en el local.') +
-                block('Ya retirados', gone, 'Todavía no retiró ningún equipo.');
+                block('Entregados', delivered, 'Todavía no se le entregó ningún equipo.') +
+                (gone.length ? block('Registros anteriores', gone, '') : '');
         }
 
         function renderPicker() {
             const cl = db.clientes.find(c => c.id === histClientId);
             if (!cl) return;
-            const { live } = historyOf(cl);
+            const { live, delivered } = historyOf(cl);
             const q = normalizeText(document.getElementById('hist-pick-q').value);
-            const rows = db.equipos
-                .filter(e => !live.some(l => l.id === e.id))
+            const rows = [...db.equipos, ...db.entregados]
+                .filter(e => ![...live, ...delivered].some(l => l.id === e.id))
                 .filter(e => !q || normalizeText(e.owner).includes(q) || normalizeText(e.plate).includes(q) || normalizeText(e.type).includes(q))
                 .sort((a, b) => b.timestamp - a.timestamp).slice(0, 8);
             document.getElementById('hist-pick-list').innerHTML = rows.length ? rows.map(e => {
                 const other = db.clientes.find(c => c.id !== cl.id && (c.history || []).some(h => h.id === e.id));
-                return `<div class="flex items-center justify-between gap-2 border border-gray-200 bg-white rounded-lg p-2 text-sm"><div class="min-w-0"><p class="font-medium text-gray-800 truncate">${escapeHTML(e.owner)}: ${escapeHTML(e.type)} <span class="font-mono text-xs text-gray-500">${escapeHTML(e.plate)}</span></p>${other ? `<p class="text-xs text-orange-600">Hoy figura en el historial de ${escapeHTML(other.name)}</p>` : ''}</div><button type="button" onclick="addToHistory(${e.id})" class="shrink-0 px-3 py-1 text-xs font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700">Agregar</button></div>`;
+                return `<div class="flex items-center justify-between gap-2 border border-gray-200 bg-white rounded-lg p-2 text-sm"><div class="min-w-0"><p class="font-medium text-gray-800 truncate">${escapeHTML(e.owner)}: ${escapeHTML(e.type)} <span class="font-mono text-xs text-gray-500">${escapeHTML(e.plate)}</span>${e.deliveredAt ? ' <span class="text-xs text-emerald-600">entregado</span>' : ''}</p>${other ? `<p class="text-xs text-orange-600">Hoy figura en el historial de ${escapeHTML(other.name)}</p>` : ''}</div><button type="button" onclick="addToHistory(${e.id})" class="shrink-0 px-3 py-1 text-xs font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700">Agregar</button></div>`;
             }).join('') : '<p class="text-sm text-gray-400">No hay otros equipos para agregar.</p>';
         }
 
@@ -1358,7 +1387,7 @@
         };
         window.addToHistory = function(eqId) {
             const cl = db.clientes.find(c => c.id === histClientId);
-            const eq = db.equipos.find(e => e.id === eqId);
+            const eq = db.equipos.find(e => e.id === eqId) || db.entregados.find(e => e.id === eqId);
             if (!cl || !eq) return;
             // Un equipo pertenece a un solo cliente: si estaba en otro historial, se mueve a este
             db.clientes.forEach(c => { if (c.history) c.history = c.history.filter(h => h.id !== eqId); });
@@ -1448,12 +1477,168 @@
         }
 
         window.deleteEntity = function(type, id) {
-            if (type === 'equipos') archiveToHistory(id);
+            if (type === 'equipos') {
+                purgeTrash();
+                const eq = db.equipos.find(e => e.id === id);
+                if (eq) { db.papelera = db.papelera.filter(t => t.id !== id).concat({ ...eq, deletedAt: Date.now() }); saveData(KEYS.papelera, db.papelera); }
+            }
             db[type] = db[type].filter(item => item.id !== id);
             saveData(KEYS[type], db[type]);
             updateAllViews();
-            showToast('Registro eliminado exitosamente', 'success');
+            showToast(type === 'equipos' ? 'Equipo movido a la papelera' : 'Registro eliminado exitosamente', 'success');
         };
+
+        // ================= EQUIPOS ENTREGADOS =================
+        window.entregarEquipo = function(id) {
+            const eq = db.equipos.find(e => e.id === id);
+            if (!eq) return;
+            const saldo = eqBalance(eq);
+            if (saldo > 0 && !confirm(`Este equipo todavía tiene un saldo de ${money(saldo)}. ¿Entregarlo igual?`)) return;
+            db.entregados = db.entregados.filter(t => t.id !== id).concat({ ...eq, deliveredAt: Date.now() });
+            db.equipos = db.equipos.filter(e => e.id !== id);
+            saveData(KEYS.entregados, db.entregados);
+            saveData(KEYS.equipos, db.equipos);
+            updateAllViews();
+            showToast('Equipo marcado como entregado', 'success');
+        };
+
+        window.devolverAlListado = function(id) {
+            const t = db.entregados.find(x => x.id === id);
+            if (!t) return;
+            const { deliveredAt, ...eq } = t;
+            if (!db.equipos.some(e => e.id === eq.id)) db.equipos.push(eq);
+            db.entregados = db.entregados.filter(x => x.id !== id);
+            saveData(KEYS.equipos, db.equipos);
+            saveData(KEYS.entregados, db.entregados);
+            updateAllViews();
+            showToast('Equipo devuelto al listado', 'success');
+        };
+
+        window.eliminarEntregado = function(id) {
+            const t = db.entregados.find(x => x.id === id);
+            if (!t || !confirm('¿Enviar este registro a la papelera?')) return;
+            db.papelera = db.papelera.filter(x => x.id !== id).concat({ ...t, deletedAt: Date.now() });
+            db.entregados = db.entregados.filter(x => x.id !== id);
+            saveData(KEYS.papelera, db.papelera);
+            saveData(KEYS.entregados, db.entregados);
+            updateAllViews();
+            showToast('Registro enviado a la papelera', 'success');
+        };
+
+        function renderEntregados() {
+            const list = document.getElementById('deliv-list');
+            if (!list) return;
+            const q = normalizeText(document.getElementById('deliv-search').value);
+            const all = db.entregados.slice().sort((a, b) => (b.deliveredAt || 0) - (a.deliveredAt || 0));
+            const items = all.filter(t => !q || [t.owner, t.plate, t.type, t.phone].some(v => normalizeText(String(v ?? '')).includes(q)));
+            document.getElementById('deliv-count').textContent = `${all.length} ${all.length === 1 ? 'equipo entregado' : 'equipos entregados'}`;
+            list.innerHTML = items.length ? items.slice(0, 100).map(t => {
+                const saldo = eqBalance(t);
+                return `<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 text-sm space-y-2">
+                    <div class="flex items-center justify-between gap-2"><span class="font-semibold text-gray-800">${escapeHTML(t.type)}</span><span class="text-xs bg-gray-100 border border-gray-200 px-2 py-0.5 rounded font-mono">${escapeHTML(t.plate)}</span></div>
+                    <p class="text-gray-600">Dueño: ${escapeHTML(t.owner)}</p>
+                    <p class="text-gray-500">${escapeHTML(t.fault)}</p>
+                    <p class="text-xs text-gray-400">Ingresó el ${fmtFecha(t.timestamp)}. Entregado el ${fmtFecha(t.deliveredAt)}.</p>
+                    <p class="flex items-center justify-between"><span class="text-gray-500 font-medium">Monto a pagar:</span><span class="font-bold ${saldo > 0 ? 'text-amber-600' : saldo < 0 ? 'text-red-600' : 'text-emerald-700'}">${money(saldo)}</span></p>
+                    <div class="flex justify-end gap-2 pt-2 border-t border-gray-100">
+                        <button type="button" onclick="eliminarEntregado(${t.id})" class="px-3 py-1.5 text-sm rounded-md font-medium text-red-600 bg-red-50 hover:bg-red-100 transition-colors">Enviar a papelera</button>
+                        <button type="button" onclick="devolverAlListado(${t.id})" class="px-3 py-1.5 text-sm rounded-md font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors">Devolver al listado</button>
+                    </div>
+                </div>`;
+            }).join('') + (items.length > 100 ? '<p class="text-xs text-gray-400 col-span-full">Mostrando los 100 más recientes. Usa el buscador para ver el resto.</p>' : '')
+              : '<p class="text-gray-400 text-sm col-span-full">No hay equipos entregados para mostrar.</p>';
+        }
+
+        // ================= PAPELERA =================
+        const TRASH_DAYS = 30;
+
+        // Al borrar para siempre, también se quitan los vínculos manuales de los historiales
+        function unlinkFromHistories(ids) {
+            let touched = false;
+            db.clientes.forEach(c => {
+                if ((c.history || []).some(h => ids.includes(h.id))) { c.history = c.history.filter(h => !ids.includes(h.id)); touched = true; }
+            });
+            if (touched) saveData(KEYS.clientes, db.clientes);
+        }
+
+        function purgeTrash() {
+            const limit = Date.now() - TRASH_DAYS * 86400000;
+            const old = db.papelera.filter(t => (t.deletedAt || 0) <= limit);
+            if (!old.length) return;
+            db.papelera = db.papelera.filter(t => (t.deletedAt || 0) > limit);
+            saveData(KEYS.papelera, db.papelera);
+            unlinkFromHistories(old.map(t => t.id));
+        }
+
+        function renderPapelera() {
+            const list = document.getElementById('trash-list');
+            const badge = document.getElementById('trash-count');
+            if (!list) return;
+            const items = db.papelera.slice().sort((a, b) => (b.deletedAt || 0) - (a.deletedAt || 0));
+            badge.textContent = items.length;
+            badge.classList.toggle('hidden', !items.length);
+            list.innerHTML = items.length ? items.map(t => {
+                const left = Math.max(0, TRASH_DAYS - Math.floor((Date.now() - (t.deletedAt || 0)) / 86400000));
+                return `<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 text-sm space-y-2">
+                    <div class="flex items-center justify-between gap-2"><span class="font-semibold text-gray-800">${escapeHTML(t.type)}</span><span class="text-xs bg-gray-100 border border-gray-200 px-2 py-0.5 rounded font-mono">${escapeHTML(t.plate)}</span></div>
+                    <p class="text-gray-600">Dueño: ${escapeHTML(t.owner)}</p>
+                    <p class="text-gray-500">${escapeHTML(t.fault)}</p>
+                    <p class="text-xs text-gray-400">Eliminado el ${fmtFecha(t.deletedAt)}. Se borra definitivamente en ${left} ${left === 1 ? 'día' : 'días'}.</p>
+                    <div class="flex justify-end gap-2 pt-2 border-t border-gray-100">
+                        <button type="button" onclick="borrarDefinitivo(${t.id})" class="px-3 py-1.5 text-sm rounded-md font-medium text-red-600 bg-red-50 hover:bg-red-100 transition-colors">Eliminar para siempre</button>
+                        <button type="button" onclick="recuperarEquipo(${t.id})" class="px-3 py-1.5 text-sm rounded-md font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition-colors">Recuperar</button>
+                    </div>
+                </div>`;
+            }).join('') : '<p class="text-gray-400 text-sm col-span-full">La papelera está vacía.</p>';
+        }
+
+        // Un equipo que estaba entregado vuelve a "Equipos Entregados"; el resto, al listado
+        window.recuperarEquipo = function(id) {
+            const t = db.papelera.find(x => x.id === id);
+            if (!t) return;
+            const { deletedAt, ...rest } = t;
+            const target = rest.deliveredAt ? 'entregados' : 'equipos';
+            if (!db[target].some(e => e.id === rest.id)) db[target].push(rest);
+            db.papelera = db.papelera.filter(x => x.id !== id);
+            saveData(KEYS[target], db[target]);
+            saveData(KEYS.papelera, db.papelera);
+            updateAllViews();
+            showToast(target === 'entregados' ? 'Recuperado en Equipos Entregados' : 'Equipo recuperado', 'success');
+        };
+
+        window.borrarDefinitivo = function(id) {
+            if (!confirm('¿Eliminar este equipo para siempre? No se podrá recuperar.')) return;
+            db.papelera = db.papelera.filter(x => x.id !== id);
+            saveData(KEYS.papelera, db.papelera);
+            unlinkFromHistories([id]);
+            updateAllViews();
+            showToast('Equipo eliminado para siempre', 'success');
+        };
+
+        window.vaciarPapelera = function() {
+            if (!db.papelera.length) return;
+            if (!confirm('¿Vaciar la papelera? Los equipos se borrarán para siempre.')) return;
+            const ids = db.papelera.map(t => t.id);
+            db.papelera = [];
+            saveData(KEYS.papelera, db.papelera);
+            unlinkFromHistories(ids);
+            updateAllViews();
+            showToast('Papelera vaciada', 'success');
+        };
+
+        // ================= AVISO DE RESPALDO =================
+        const BACKUP_AVISO_DIAS = 7; // días sin respaldo a partir de los cuales aparece el aviso
+        const lastBackupKey = () => KEYS.equipos.replace('equipos', 'lastbackup');
+
+        function updateBackupAlert() {
+            const el = document.getElementById('backup-alert');
+            if (!el) return;
+            let last = parseInt(localStorage.getItem(lastBackupKey()), 10);
+            if (!last) { last = Date.now(); localStorage.setItem(lastBackupKey(), String(last)); } // sin registro: se cuenta desde hoy
+            const dias = Math.floor((Date.now() - last) / 86400000);
+            el.classList.toggle('hidden', dias < BACKUP_AVISO_DIAS);
+            document.getElementById('backup-alert-text').textContent = `Hace ${dias} ${dias === 1 ? 'día' : 'días'} que no guardas tu respaldo`;
+        }
 
         // ================= RESPALDO LOGIC =================
         window.exportarDatos = function() {
@@ -1467,7 +1652,9 @@
                     data: {
                         equipos: db.equipos,
                         clientes: db.clientes,
-                        proveedores: db.proveedores
+                        proveedores: db.proveedores,
+                        papelera: db.papelera,
+                        entregados: db.entregados
                     }
                 };
 
@@ -1482,6 +1669,8 @@
                 link.click();
                 document.body.removeChild(link);
                 URL.revokeObjectURL(url);
+                localStorage.setItem(lastBackupKey(), String(Date.now()));
+                updateBackupAlert();
                 
                 showToast('¡Datos exportados con éxito!', 'success');
             } catch (error) {
@@ -1508,6 +1697,8 @@
                         if(parsed.data.equipos) localStorage.setItem(KEYS.equipos, JSON.stringify(parsed.data.equipos));
                         if(parsed.data.clientes) localStorage.setItem(KEYS.clientes, JSON.stringify(parsed.data.clientes));
                         if(parsed.data.proveedores) localStorage.setItem(KEYS.proveedores, JSON.stringify(parsed.data.proveedores));
+                        if(parsed.data.papelera) localStorage.setItem(KEYS.papelera, JSON.stringify(parsed.data.papelera));
+                        if(parsed.data.entregados) localStorage.setItem(KEYS.entregados, JSON.stringify(parsed.data.entregados));
                         
                         loadAllData();
                         Object.keys(KEYS).forEach(t => saveData(KEYS[t], db[t]));

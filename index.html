@@ -4,14 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestor de Taller.</title>
-    <link rel="manifest" href="manifest.webmanifest">
-    <link rel="icon" type="image/png" href="icon-192.png">
-    <link rel="apple-touch-icon" href="apple-touch-icon.png">
-    <meta name="theme-color" content="#2563eb">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="Gestor de Taller.">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -34,17 +26,6 @@
     
         /* Pantallas anchas: el formulario queda a la vista y tiene su propio scroll si es más alto que la ventana */
         @media (min-width: 1024px) { .sticky-form { max-height: calc(100vh - 2rem); overflow-y: auto; } }
-    
-        /* Celular: la fila de botones de cada tarjeta se desliza hacia los costados en vez de ocultar opciones */
-        @media (max-width: 767px) {
-            .card-actions { flex-wrap: nowrap !important; justify-content: flex-start !important; overflow-x: auto; -webkit-overflow-scrolling: touch; scroll-snap-type: x proximity; padding-bottom: .5rem; }
-            .card-actions > * { flex-shrink: 0; white-space: nowrap; scroll-snap-align: start; }
-            main { padding-bottom: calc(7rem + env(safe-area-inset-bottom, 0px)) !important; }
-        }
-        /* Más espacio al final de las listas para llegar a las opciones de los últimos registros */
-        @media (min-width: 768px) { main { padding-bottom: 5rem !important; } }
-        /* Alto real de la pantalla en celulares (descuenta las barras del navegador) */
-        @supports (height: 100dvh) { body.h-screen { height: 100dvh; } }
     </style>
 <style id="print-page-style"></style>
     <style>
@@ -62,7 +43,7 @@
     <header class="md:hidden bg-slate-900 text-white p-4 flex justify-between items-center shadow-md z-20">
         <div class="flex items-center gap-2">
             <i class="fa-solid fa-wrench text-blue-400"></i>
-            <span class="font-bold text-lg">Gestor de Taller.</span>
+            <span class="font-bold text-lg">AutoGestión Pro</span>
         </div>
         <button id="mobileMenuBtn" class="text-gray-300 hover:text-white focus:outline-none">
             <i class="fa-solid fa-bars text-2xl"></i>
@@ -95,10 +76,6 @@
                 <i class="fa-solid fa-boxes-packing w-5 text-center"></i>
                 <span>Proveedores</span>
             </button>
-            <button onclick="navigate('resumen')" id="nav-resumen" class="nav-link flex items-center gap-3 px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition-colors text-left w-full">
-                <i class="fa-solid fa-chart-column w-5 text-center"></i>
-                <span>Resumen Mensual</span>
-            </button>
             <button onclick="navigate('entregados')" id="nav-entregados" class="nav-link flex items-center gap-3 px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition-colors text-left w-full">
                 <i class="fa-solid fa-handshake w-5 text-center"></i>
                 <span>Equipos Entregados</span>
@@ -115,7 +92,7 @@
         </nav>
         
         <div class="p-4 border-t border-gray-200 text-xs text-gray-400 text-center">
-           Beta 7 - @mmaatteeooddll en instagram!
+            Beta 6.3 - @mmaatteeooddll en instagram!
         </div>
     </aside>
 
@@ -240,6 +217,10 @@
                             <div class="grid grid-cols-2 gap-3">
                                 <div><label class="block text-xs font-medium text-gray-700 mb-1">Equipo</label><input type="text" id="eq-type" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
                                 <div><label class="block text-xs font-medium text-gray-700 mb-1">Matrícula</label><input type="text" id="eq-plate" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm uppercase focus:ring-blue-500 outline-none"></div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div><label class="block text-xs font-medium text-gray-700 mb-1">Kilometraje</label><input type="text" id="eq-km" autocomplete="off" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
+                                <div><label class="block text-xs font-medium text-gray-700 mb-1">Km que faltan para próximo service</label><input type="text" id="eq-km-service" autocomplete="off" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
                             </div>
                             <div><label class="block text-xs font-medium text-gray-700 mb-1">Falla</label><input type="text" id="eq-fault" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
                             <div><label class="block text-xs font-medium text-gray-700 mb-1">Repuesto (Opcional)</label><input type="text" id="eq-part" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
@@ -375,26 +356,6 @@
         </div>
 
         <!-- ================= VIEW: RESPALDO ================= -->
-        <div id="view-resumen" class="view-section hidden animate-fade-in">
-            <div class="mb-6 flex items-start justify-between gap-3 flex-wrap">
-                <div>
-                    <h1 class="text-2xl font-bold text-gray-800">Resumen Mensual</h1>
-                    <p id="resumen-rango" class="text-gray-500 text-sm mt-1"></p>
-                </div>
-                <div class="flex items-center gap-2 flex-wrap">
-                    <button type="button" onclick="resumenMover(-1)" class="px-3 py-2 rounded-md bg-white border border-gray-300 text-sm hover:bg-gray-50" aria-label="Mes anterior"><i class="fa-solid fa-chevron-left"></i></button>
-                    <select id="resumen-mes" onchange="resumenElegir()" class="rounded-md border-gray-300 border px-2 py-2 text-sm bg-white"></select>
-                    <select id="resumen-anio" onchange="resumenElegir()" class="rounded-md border-gray-300 border px-2 py-2 text-sm bg-white"></select>
-                    <button type="button" onclick="resumenMover(1)" class="px-3 py-2 rounded-md bg-white border border-gray-300 text-sm hover:bg-gray-50" aria-label="Mes siguiente"><i class="fa-solid fa-chevron-right"></i></button>
-                </div>
-            </div>
-            <div id="resumen-cards" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4"></div>
-            <div class="mt-6 flex gap-2 flex-wrap">
-                <button type="button" onclick="descargarResumenImagen()" class="px-4 py-2 text-sm rounded-md font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors flex items-center gap-2"><i class="fa-solid fa-image"></i> Descargar imagen</button>
-                <button type="button" onclick="descargarResumenTxt()" class="px-4 py-2 text-sm rounded-md font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 transition-colors flex items-center gap-2"><i class="fa-solid fa-file-lines"></i> Descargar TXT</button>
-            </div>
-        </div>
-
         <div id="view-entregados" class="view-section hidden animate-fade-in">
             <div class="mb-4">
                 <h1 class="text-2xl font-bold text-gray-800">Equipos Entregados</h1>
@@ -448,18 +409,6 @@
                         <i class="fa-solid fa-database"></i> Restaurar desde Archivo
                     </button>
                 </div>
-                <!-- ADMIN -->
-                <div id="admin-card" class="md:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div class="flex items-start gap-4">
-                        <div class="bg-slate-100 text-slate-600 w-12 h-12 rounded-full flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-user-shield"></i></div>
-                        <div>
-                            <h2 class="text-lg font-bold text-gray-800 mb-1">Login de Administrador</h2>
-                            <p class="text-sm text-gray-600">Uso técnico. Desconecta la app de la nube y trabaja solo con los datos de este dispositivo. Para volver al funcionamiento normal, toca «Salir».</p>
-                            <p id="admin-active" class="text-sm font-semibold text-orange-600 mt-2 hidden">Modo administrador activo (sin nube).</p>
-                        </div>
-                    </div>
-                    <button id="admin-btn" type="button" onclick="openDebugPrompt()" class="shrink-0 flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-900 text-white font-medium py-3 px-5 rounded-lg transition duration-200 shadow-sm hover:shadow-md"><i class="fa-solid fa-lock"></i> Ingresar como administrador</button>
-                </div>
             </div>
         </div>
     </main>
@@ -489,7 +438,11 @@
                         <div><label class="block text-xs font-medium text-gray-700 mb-1">Equipo</label><input type="text" id="edit-eq-type" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
                         <div><label class="block text-xs font-medium text-gray-700 mb-1">Matrícula</label><input type="text" id="edit-eq-plate" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm uppercase focus:ring-blue-500 outline-none"></div>
                     </div>
-                    <div><label class="block text-xs font-medium text-gray-700 mb-1">Falla</label><input type="text" id="edit-eq-fault" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
+                    <div class="grid grid-cols-2 gap-3">
+                                <div><label class="block text-xs font-medium text-gray-700 mb-1">Kilometraje</label><input type="text" id="edit-eq-km" autocomplete="off" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
+                                <div><label class="block text-xs font-medium text-gray-700 mb-1">Km que faltan para próximo service</label><input type="text" id="edit-eq-km-service" autocomplete="off" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
+                            </div>
+                            <div><label class="block text-xs font-medium text-gray-700 mb-1">Falla</label><input type="text" id="edit-eq-fault" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
                     <div><label class="block text-xs font-medium text-gray-700 mb-1">Repuesto (Opcional)</label><input type="text" id="edit-eq-part" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></div>
                     <div><label class="block text-xs font-medium text-gray-700 mb-1">Descripción</label><textarea id="edit-eq-desc" rows="2" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none"></textarea></div>
                     <div class="grid grid-cols-2 gap-3">
@@ -663,7 +616,6 @@
             renderProveedores();
             renderPapelera();
             renderEntregados();
-            renderResumen();
             updateBackupAlert();
             updateHomeStats();
         }
@@ -691,7 +643,8 @@
             document.getElementById(`nav-${viewName}`).classList.add('active');
             if (viewName === 'papelera') { purgeTrash(); renderPapelera(); }
             if (viewName === 'entregados') renderEntregados();
-            if (viewName === 'resumen') renderResumen();
+            const dbtn = document.getElementById('debug-btn-home');
+            if (dbtn) dbtn.classList.toggle('hidden', viewName !== 'inicio' || window.debugMode);
 
             // Close mobile menu if open
             if(window.innerWidth < 768) {
@@ -769,6 +722,8 @@
                 document.getElementById('edit-eq-phone').value = item.phone && item.phone !== '-' ? item.phone : '';
                 document.getElementById('edit-eq-type').value = item.type;
                 document.getElementById('edit-eq-plate').value = item.plate;
+                document.getElementById('edit-eq-km').value = item.km || '';
+                document.getElementById('edit-eq-km-service').value = item.kmService || '';
                 document.getElementById('edit-eq-fault').value = item.fault;
                 document.getElementById('edit-eq-part').value = item.part;
                 document.getElementById('edit-eq-desc').value = item.desc;
@@ -839,6 +794,8 @@
                 db[type][index].phone = document.getElementById('edit-eq-phone').value.trim();
                 db[type][index].type = document.getElementById('edit-eq-type').value.trim();
                 db[type][index].plate = document.getElementById('edit-eq-plate').value.trim().toUpperCase();
+                db[type][index].km = document.getElementById('edit-eq-km').value.trim();
+                db[type][index].kmService = document.getElementById('edit-eq-km-service').value.trim();
                 db[type][index].fault = document.getElementById('edit-eq-fault').value.trim();
                 db[type][index].part = document.getElementById('edit-eq-part').value.trim();
                 db[type][index].desc = document.getElementById('edit-eq-desc').value.trim();
@@ -921,6 +878,8 @@
                 phone: document.getElementById('eq-phone').value.trim(),
                 type: document.getElementById('eq-type').value.trim(),
                 plate: document.getElementById('eq-plate').value.trim().toUpperCase(),
+                km: document.getElementById('eq-km').value.trim(),
+                kmService: document.getElementById('eq-km-service').value.trim(),
                 fault: document.getElementById('eq-fault').value.trim(),
                 part: document.getElementById('eq-part').value.trim(),
                 desc: document.getElementById('eq-desc').value.trim(),
@@ -996,6 +955,7 @@
                         </select>
                     </div>
                     <div class="text-sm bg-gray-50 p-3 rounded-lg mb-3 border border-gray-100 flex-grow">
+                        ${(eq.km || eq.kmService) ? `<p class="mb-1 flex flex-wrap gap-x-4"><span><span class="text-gray-500 font-medium">Kilometraje:</span> ${escapeHTML(eq.km || '-')}</span><span><span class="text-gray-500 font-medium">Km para próximo service:</span> ${escapeHTML(eq.kmService || '-')}</span></p>` : ''}
                         <p class="mb-1"><span class="text-gray-500 font-medium">Falla:</span> ${escapeHTML(eq.fault)}</p>
                         ${eq.part ? `<p class="mb-1"><span class="text-gray-500 font-medium">Repuesto:</span> ${escapeHTML(eq.part)}</p>` : ''}
                         <p class="mb-1"><span class="text-gray-500 font-medium">Entregas:</span> <span class="font-bold text-gray-800">$${Number(eq.cost || 0).toFixed(2)}</span></p>
@@ -1012,10 +972,11 @@
                     </div>
                     
                     <!-- Acción Footer -->
-                    <div class="pt-3 border-t border-gray-100 flex justify-end flex-wrap gap-2 card-actions">
-                        <button onclick="whatsappEquipo(${eq.id})" class="px-3 py-1.5 text-sm rounded-md font-medium text-green-700 bg-green-50 hover:bg-green-100 transition-colors flex items-center gap-1"><i class="fa-brands fa-whatsapp"></i> WhatsApp</button>
+                    <div class="pt-3 border-t border-gray-100 flex justify-end gap-2">
                         <button onclick="entregarEquipo(${eq.id})" class="px-3 py-1.5 text-sm rounded-md font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition-colors flex items-center gap-1"><i class="fa-solid fa-handshake"></i> Entregar</button>
-                        <button onclick="enviarOrden(${eq.id})" class="px-3 py-1.5 text-sm rounded-md font-medium text-green-700 bg-green-50 hover:bg-green-100 transition-colors flex items-center gap-1"><i class="fa-brands fa-whatsapp"></i> Enviar orden</button>
+                        <button onclick="printBoleta(${eq.id})" class="px-3 py-1.5 text-sm rounded-md font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors flex items-center gap-1">
+                            <i class="fa-solid fa-print"></i> Imprimir
+                        </button>
                         <button onclick="openEditModal('equipos', ${eq.id})" class="px-3 py-1.5 text-sm rounded-md font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors flex items-center gap-1">
                             <i class="fa-solid fa-pen-to-square"></i> Editar
                         </button>
@@ -1191,12 +1152,9 @@
                         ${cl.address ? `<p class="text-sm text-gray-600 flex items-center gap-2"><i class="fa-solid fa-location-dot w-4 text-center text-gray-400"></i> ${escapeHTML(cl.address)}</p>` : ''}
                     </div>
                     <!-- Acción Footer -->
-                    <div class="pt-3 mt-4 border-t border-gray-100 flex justify-end gap-2 card-actions">
+                    <div class="pt-3 mt-4 border-t border-gray-100 flex justify-end gap-2">
                         <button onclick="openHistorial(${cl.id})" class="px-3 py-1.5 text-sm rounded-md font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center gap-1">
                             <i class="fa-solid fa-clock-rotate-left"></i> Historial
-                        </button>
-                        <button onclick="whatsappCliente(${cl.id})" class="px-3 py-1.5 text-sm rounded-md font-medium text-green-700 bg-green-50 hover:bg-green-100 transition-colors flex items-center gap-1">
-                            <i class="fa-brands fa-whatsapp"></i> WhatsApp
                         </button>
                         <button onclick="openEditModal('clientes', ${cl.id})" class="px-3 py-1.5 text-sm rounded-md font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors flex items-center gap-1">
                             <i class="fa-solid fa-pen-to-square"></i> Editar
@@ -1273,7 +1231,7 @@
                         ${pr.type ? `<span class="mt-3 inline-block text-xs bg-emerald-50 text-emerald-700 border border-emerald-100 px-2.5 py-1 rounded-md font-medium"><i class="fa-solid fa-tags mr-1"></i>${escapeHTML(pr.type)}</span>` : ''}
                     </div>
                     <!-- Acción Footer -->
-                    <div class="pt-3 mt-4 border-t border-gray-100 flex justify-end gap-2 card-actions">
+                    <div class="pt-3 mt-4 border-t border-gray-100 flex justify-end gap-2">
                         <button onclick="openEditModal('proveedores', ${pr.id})" class="px-3 py-1.5 text-sm rounded-md font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors flex items-center gap-1">
                             <i class="fa-solid fa-pen-to-square"></i> Editar
                         </button>
@@ -1534,12 +1492,6 @@
         }
 
         window.deleteEntity = function(type, id) {
-            const it = db[type].find(x => x.id === id);
-            if (!it) return;
-            const msg = type === 'equipos'
-                ? `¿Mover a la papelera el equipo "${it.type || 'sin nombre'}" de ${it.owner || 'sin dueño'}? Podrás recuperarlo desde la Papelera.`
-                : `¿Eliminar ${type === 'clientes' ? 'al cliente' : 'al proveedor'} "${it.name || 'sin nombre'}"? Se borra para siempre y no se puede deshacer.`;
-            if (!confirm(msg)) return;
             if (type === 'equipos') {
                 purgeTrash();
                 const eq = db.equipos.find(e => e.id === id);
@@ -1549,224 +1501,6 @@
             saveData(KEYS[type], db[type]);
             updateAllViews();
             showToast(type === 'equipos' ? 'Equipo movido a la papelera' : 'Registro eliminado exitosamente', 'success');
-        };
-
-        // ================= RESUMEN MENSUAL =================
-        const MESES_ES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-        const RESUMEN_NOTA = 'Entregas registradas en "Listado de Equipos"';
-        let resumenSel = null;
-
-        const rsPad = n => String(n).padStart(2, '0');
-        const rsTs = e => Number(e.timestamp || e.id) || 0;
-
-        // Equipos que ingresaron entre el día 1 y el último día del mes (los del listado y los ya entregados; la papelera no cuenta)
-        function calcResumen(y, m) {
-            const from = new Date(y, m, 1).getTime(), to = new Date(y, m + 1, 1).getTime();
-            const inMonth = e => { const t = rsTs(e); return t >= from && t < to; };
-            const r = { y, m, last: new Date(y, m + 1, 0).getDate(), total: 0, arreglados: 0, siguen: 0, sinRevisar: 0, esperando: 0, sinArreglar: 0, costos: 0, entregas: 0 };
-            [[db.equipos, false], [db.entregados, true]].forEach(([list, entregado]) => list.filter(inMonth).forEach(e => {
-                r.total++;
-                r.costos += eqTotal(e);
-                r.entregas += Number(e.cost) || 0;
-                if (e.status === 'Arreglado') r.arreglados++;
-                else if (entregado) r.sinArreglar++;
-                else if (e.status === 'Esperando repuestos') { r.siguen++; r.esperando++; }
-                else { r.siguen++; r.sinRevisar++; }
-            }));
-            r.costos = Math.round(r.costos * 100) / 100;
-            r.entregas = Math.round(r.entregas * 100) / 100;
-            return r;
-        }
-
-        function resumenLineas(r) {
-            return [
-                ['Equipos que entraron al local', String(r.total)],
-                ['Equipos arreglados', String(r.arreglados)],
-                ['Equipos que siguen en taller', String(r.siguen)],
-                ['Costos totales de reparaciones', money(r.costos)],
-                ['Ganancias (entregas)', money(r.entregas)]
-            ];
-        }
-
-        function resumenActual() {
-            if (!resumenSel) { const n = new Date(); resumenSel = { y: n.getFullYear(), m: n.getMonth() }; }
-            return calcResumen(resumenSel.y, resumenSel.m);
-        }
-
-        function renderResumen() {
-            const box = document.getElementById('resumen-cards');
-            if (!box) return;
-            const r = resumenActual();
-            const selM = document.getElementById('resumen-mes'), selY = document.getElementById('resumen-anio');
-            const hoy = new Date().getFullYear();
-            const y0 = Math.min(hoy, r.y, ...[...db.equipos, ...db.entregados].map(e => new Date(rsTs(e) || Date.now()).getFullYear()));
-            const y1 = Math.max(hoy, r.y);
-            if (selM.options.length !== 12) selM.innerHTML = MESES_ES.map((n, i) => `<option value="${i}">${n}</option>`).join('');
-            if (selY.options.length !== y1 - y0 + 1) selY.innerHTML = Array.from({ length: y1 - y0 + 1 }, (_, i) => y1 - i).map(y => `<option value="${y}">${y}</option>`).join('');
-            selM.value = String(r.m);
-            selY.value = String(r.y);
-            document.getElementById('resumen-rango').textContent = `Equipos ingresados del 01/${rsPad(r.m + 1)}/${r.y} al ${rsPad(r.last)}/${rsPad(r.m + 1)}/${r.y}`;
-            const card = (icon, color, label, value, extra = '') => `<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
-                <div class="flex items-center gap-3 mb-2"><span class="w-10 h-10 rounded-full flex items-center justify-center ${color}"><i class="fa-solid ${icon}"></i></span><span class="text-sm font-medium text-gray-500">${label}</span></div>
-                <p class="text-3xl font-bold text-gray-800">${value}</p>${extra}</div>`;
-            const L = resumenLineas(r);
-            const siguenExtra = `<p class="text-xs text-gray-500 mt-1">${r.sinRevisar} sin revisar, ${r.esperando} esperando repuestos${r.sinArreglar ? `. ${r.sinArreglar} entregado${r.sinArreglar === 1 ? '' : 's'} sin arreglar` : ''}</p>`;
-            const nota = `<p class="text-xs text-gray-500 mt-2">Entregas registradas en "<a href="#" onclick="navigate('equipos'); return false;" class="text-blue-600 underline hover:text-blue-800">Listado de Equipos</a>"</p>`;
-            box.innerHTML =
-                card('fa-arrow-right-to-bracket', 'bg-blue-100 text-blue-600', L[0][0], L[0][1]) +
-                card('fa-circle-check', 'bg-emerald-100 text-emerald-600', L[1][0], L[1][1]) +
-                card('fa-screwdriver-wrench', 'bg-amber-100 text-amber-600', L[2][0], L[2][1], siguenExtra) +
-                card('fa-file-invoice-dollar', 'bg-red-100 text-red-600', L[3][0], L[3][1]) +
-                card('fa-hand-holding-dollar', 'bg-green-100 text-green-600', L[4][0], L[4][1], nota);
-        }
-
-        window.resumenMover = function(d) {
-            const r = resumenActual(), dt = new Date(r.y, r.m + d, 1);
-            resumenSel = { y: dt.getFullYear(), m: dt.getMonth() };
-            renderResumen();
-        };
-        window.resumenElegir = function() {
-            resumenSel = { y: Number(document.getElementById('resumen-anio').value), m: Number(document.getElementById('resumen-mes').value) };
-            renderResumen();
-        };
-
-        function rsDownload(blob, nombre) {
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = nombre;
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            setTimeout(() => URL.revokeObjectURL(a.href), 1500);
-        }
-
-        window.descargarResumenTxt = function() {
-            const r = resumenActual();
-            const txt = [
-                `RESUMEN MENSUAL - ${MESES_ES[r.m]} ${r.y}`,
-                `Del 01/${rsPad(r.m + 1)}/${r.y} al ${rsPad(r.last)}/${rsPad(r.m + 1)}/${r.y}`,
-                '',
-                ...resumenLineas(r).map(([a, b]) => `${a}: ${b}`),
-                `(${RESUMEN_NOTA})`,
-                '',
-                `Generado el ${new Date().toLocaleDateString('es-UY')}`
-            ].join('\r\n');
-            rsDownload(new Blob(['\ufeff' + txt], { type: 'text/plain;charset=utf-8' }), `resumen_${r.y}-${rsPad(r.m + 1)}.txt`);
-        };
-
-        window.descargarResumenImagen = function() {
-            const r = resumenActual(), L = resumenLineas(r);
-            const W = 900, H = 640, K = 2, F = 'Segoe UI, Arial, sans-serif';
-            const c = document.createElement('canvas');
-            c.width = W * K; c.height = H * K;
-            const x = c.getContext('2d');
-            x.scale(K, K);
-            x.fillStyle = '#f3f4f6'; x.fillRect(0, 0, W, H);
-            x.fillStyle = '#ffffff'; x.fillRect(30, 30, W - 60, H - 60);
-            x.fillStyle = '#2563eb'; x.fillRect(30, 30, W - 60, 110);
-            x.textAlign = 'left'; x.fillStyle = '#ffffff';
-            x.font = `bold 34px ${F}`; x.fillText('Resumen Mensual', 60, 85);
-            x.font = `20px ${F}`; x.fillText(`${MESES_ES[r.m]} ${r.y}  |  del 01/${rsPad(r.m + 1)} al ${rsPad(r.last)}/${rsPad(r.m + 1)}`, 60, 118);
-            L.forEach(([lab, val], i) => {
-                const yy = 205 + i * 72;
-                x.textAlign = 'left'; x.fillStyle = '#4b5563'; x.font = `22px ${F}`; x.fillText(lab, 60, yy);
-                x.textAlign = 'right'; x.fillStyle = '#111827'; x.font = `bold 30px ${F}`; x.fillText(val, W - 60, yy);
-                x.strokeStyle = '#e5e7eb'; x.lineWidth = 1; x.beginPath(); x.moveTo(60, yy + 22); x.lineTo(W - 60, yy + 22); x.stroke();
-                if (i === L.length - 1) { x.textAlign = 'left'; x.fillStyle = '#6b7280'; x.font = `italic 16px ${F}`; x.fillText(RESUMEN_NOTA, 60, yy + 48); }
-            });
-            x.textAlign = 'left'; x.fillStyle = '#9ca3af'; x.font = `14px ${F}`;
-            x.fillText(`Generado el ${new Date().toLocaleDateString('es-UY')}`, 60, H - 50);
-            c.toBlob(b => { if (b) rsDownload(b, `resumen_${r.y}-${rsPad(r.m + 1)}.png`); else showToast('No se pudo crear la imagen', 'error'); }, 'image/png');
-        };
-
-        // ================= WHATSAPP =================
-        const WA_PAIS = '598'; // código de país que se agrega a los números locales
-
-        // Devuelve el número en formato internacional (solo dígitos) o '' si no es válido.
-        // Acepta: 099123456, 99123456, +598 99 123 456, 598 99123456, 0059899123456. Un número de otro país debe empezar con + o 00.
-        function waNumero(raw) {
-            const txt = String(raw || '').trim();
-            let d = txt.replace(/\D/g, '');
-            if (!d) return '';
-            if (d.startsWith('00')) d = d.slice(2);
-            else if (!txt.startsWith('+') && !(d.startsWith(WA_PAIS) && d.length >= 11)) d = WA_PAIS + d.replace(/^0+/, '');
-            return d.length >= 8 && d.length <= 15 ? d : '';
-        }
-
-        function waAbrir(raw, texto = '') {
-            if (!String(raw || '').replace(/\D/g, '')) { showToast('Teléfono no especificado', 'error'); return; }
-            const num = waNumero(raw);
-            if (!num) { showToast('Teléfono no válido', 'error'); return; }
-            const url = 'https://wa.me/' + num + (texto ? '?text=' + encodeURIComponent(texto) : '');
-            const w = window.open(url, '_blank');
-            if (w) { try { w.opener = null; } catch (e) {} } else { location.href = url; }
-        }
-
-        window.whatsappCliente = function(id) {
-            const c = db.clientes.find(x => x.id === id);
-            waAbrir(c ? c.phone : '');
-        };
-        // Resumen de la orden en texto, listo para WhatsApp
-        function resumenOrden(e) {
-            ensureOrderNumbers();
-            const v = x => (x && String(x).trim()) ? String(x).trim() : '-';
-            const equipo = [e.type, e.plate].filter(x => x && String(x).trim() && String(x).trim() !== '-').join(' - ') || '-';
-            const sep = '==========';
-            return [`Orden Nº ${e.orderNo}`, sep, `Dueño: ${v(e.owner)}`, `Equipo y Matrícula: ${equipo}`, sep,
-                `Falla: ${v(e.fault)}`, `Repuesto: ${v(e.part)}`, `Descripción: ${v(e.desc)}`, sep, `Costo Total: ${money(eqTotal(e))}`].join('\n');
-        }
-        window.whatsappEquipo = function(id) {
-            const e = db.equipos.find(x => x.id === id);
-            if (!e) return;
-            waAbrir(String(e.phone || '').replace(/\D/g, '') ? e.phone : phoneFor(e.owner), resumenOrden(e));
-        };
-
-        // ================= ENVIAR ORDEN (IMAGEN POR WHATSAPP) =================
-        window.enviarOrden = function(id) {
-            const eq = db.equipos.find(e => e.id === id);
-            if (!eq) return;
-            ensureOrderNumbers();
-            const has = v => v && String(v).trim() && String(v).trim() !== '-';
-            const cut = (v, n) => { v = String(v); return v.length > n ? v.slice(0, n - 1) + '…' : v; };
-            const rows = [['Fecha', new Date(eq.timestamp).toLocaleDateString('es-UY')], ['Dueño', eq.owner], ['Teléfono', eq.phone], ['Equipo', eq.type], ['Matrícula', eq.plate], ['Falla', eq.fault], ['Repuesto', eq.part], ['Estado', eq.status]].filter(r => has(r[1]));
-            const tot = [['Costo', money(eqTotal(eq))]];
-            const W = 900, K = 2, F = 'Segoe UI, Arial, sans-serif';
-            const mx = document.createElement('canvas').getContext('2d'); mx.font = `22px ${F}`;
-            const wrap = (t, w) => { const out = []; String(t).split(/\n/).forEach(par => { let ln = ''; par.split(/\s+/).forEach(wd => { const t2 = ln ? ln + ' ' + wd : wd; if (mx.measureText(t2).width > w && ln) { out.push(ln); ln = wd; } else ln = t2; }); out.push(ln); }); return out; };
-            const descL = has(eq.desc) ? wrap(eq.desc, W - 120).slice(0, 10) : [];
-            const H = 200 + rows.length * 56 + (descL.length ? 54 + descL.length * 34 : 0) + 40 + tot.length * 60 + 80;
-            const c = document.createElement('canvas'); c.width = W * K; c.height = H * K;
-            const x = c.getContext('2d'); x.scale(K, K);
-            x.fillStyle = '#eff6ff'; x.fillRect(0, 0, W, H);
-            x.fillStyle = '#ffffff'; x.fillRect(30, 30, W - 60, H - 60);
-            x.fillStyle = '#2563eb'; x.fillRect(30, 30, W - 60, 120);
-            x.textAlign = 'left'; x.fillStyle = '#ffffff';
-            x.font = `bold 34px ${F}`; x.fillText(cut(NOMBRE_TALLER, 30), 60, 85);
-            x.font = `20px ${F}`; x.fillText(`Orden de servicio N° ${eq.orderNo}`, 60, 120);
-            let y = 200;
-            rows.forEach(([l, v]) => { x.textAlign = 'left'; x.fillStyle = '#6b7280'; x.font = `22px ${F}`; x.fillText(l, 60, y); x.textAlign = 'right'; x.fillStyle = '#111827'; x.font = `bold 24px ${F}`; x.fillText(cut(v, 34), W - 60, y); y += 56; });
-            if (descL.length) { x.textAlign = 'left'; x.fillStyle = '#6b7280'; x.font = `22px ${F}`; x.fillText('Descripción', 60, y); y += 38; x.fillStyle = '#111827'; descL.forEach(l => { x.fillText(l, 60, y); y += 34; }); y += 16; }
-            x.strokeStyle = '#e5e7eb'; x.lineWidth = 1; x.beginPath(); x.moveTo(60, y - 24); x.lineTo(W - 60, y - 24); x.stroke(); y += 16;
-            tot.forEach(([l, v]) => { x.textAlign = 'left'; x.fillStyle = '#4b5563'; x.font = `22px ${F}`; x.fillText(l, 60, y); x.textAlign = 'right'; x.fillStyle = '#2563eb'; x.font = `bold 30px ${F}`; x.fillText(v, W - 60, y); y += 60; });
-            x.textAlign = 'left'; x.fillStyle = '#9ca3af'; x.font = `14px ${F}`; x.fillText(`Generado el ${new Date().toLocaleDateString('es-UY')}`, 60, H - 50);
-            const num = String(eq.phone || '').replace(/\D/g, '') ? eq.phone : phoneFor(eq.owner);
-            const nom = String(eq.owner || '').split(' ')[0].replace(/^-$/, '');
-            const texto = `¡Hola${nom ? ' ' + nom : ''}! Te adjunto la orden de tu equipo!.`;
-            // La imagen se crea al instante (sin esperas) para no perder el permiso del toque en el celular
-            const bin = atob(c.toDataURL('image/png').split(',')[1]), u8 = new Uint8Array(bin.length);
-            for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
-            const nombre = `orden_${eq.orderNo}.png`, blob = new Blob([u8], { type: 'image/png' }), file = new File([blob], nombre, { type: 'image/png' });
-            const movil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-            const compartir = movil && navigator.canShare && navigator.canShare({ files: [file] }) ? navigator.share({ files: [file], title: 'Orden de servicio', text: texto }) : null;
-            if (compartir) {
-                rsDownload(blob, nombre);
-                compartir.then(() => showToast('Orden enviada', 'success')).catch(err => { if (err && err.name !== 'AbortError') showToast('No se pudo compartir. La imagen quedó guardada.', 'error'); });
-            } else {
-                // PC: se copia la imagen (sin descargar nada) y se abre el chat; solo hay que pegarla con Ctrl+V
-                const copiar = navigator.clipboard && window.ClipboardItem ? navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]) : Promise.reject(new Error('sin portapapeles'));
-                copiar.then(() => { showToast('Imagen copiada. En el chat pega con Ctrl+V y envía.', 'success'); waAbrir(num, texto); })
-                    .catch(() => { rsDownload(blob, nombre); showToast('Imagen guardada. Adjúntala en el chat de WhatsApp.'); setTimeout(() => waAbrir(num, texto), 700); });
-            }
         };
 
         // ================= EQUIPOS ENTREGADOS =================
@@ -1821,7 +1555,7 @@
                     <p class="text-gray-500">${escapeHTML(t.fault)}</p>
                     <p class="text-xs text-gray-400">Ingresó el ${fmtFecha(t.timestamp)}. Entregado el ${fmtFecha(t.deliveredAt)}.</p>
                     <p class="flex items-center justify-between"><span class="text-gray-500 font-medium">Monto a pagar:</span><span class="font-bold ${saldo > 0 ? 'text-amber-600' : saldo < 0 ? 'text-red-600' : 'text-emerald-700'}">${money(saldo)}</span></p>
-                    <div class="flex justify-end gap-2 pt-2 border-t border-gray-100 card-actions">
+                    <div class="flex justify-end gap-2 pt-2 border-t border-gray-100">
                         <button type="button" onclick="eliminarEntregado(${t.id})" class="px-3 py-1.5 text-sm rounded-md font-medium text-red-600 bg-red-50 hover:bg-red-100 transition-colors">Enviar a papelera</button>
                         <button type="button" onclick="devolverAlListado(${t.id})" class="px-3 py-1.5 text-sm rounded-md font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors">Devolver al listado</button>
                     </div>
@@ -1865,7 +1599,7 @@
                     <p class="text-gray-600">Dueño: ${escapeHTML(t.owner)}</p>
                     <p class="text-gray-500">${escapeHTML(t.fault)}</p>
                     <p class="text-xs text-gray-400">Eliminado el ${fmtFecha(t.deletedAt)}. Se borra definitivamente en ${left} ${left === 1 ? 'día' : 'días'}.</p>
-                    <div class="flex justify-end gap-2 pt-2 border-t border-gray-100 card-actions">
+                    <div class="flex justify-end gap-2 pt-2 border-t border-gray-100">
                         <button type="button" onclick="borrarDefinitivo(${t.id})" class="px-3 py-1.5 text-sm rounded-md font-medium text-red-600 bg-red-50 hover:bg-red-100 transition-colors">Eliminar para siempre</button>
                         <button type="button" onclick="recuperarEquipo(${t.id})" class="px-3 py-1.5 text-sm rounded-md font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition-colors">Recuperar</button>
                     </div>
@@ -2037,12 +1771,11 @@
             loadAllData();
             updateAllViews();
             document.getElementById('login-overlay').classList.add('hidden');
-            document.getElementById('admin-btn').classList.add('hidden');
-            document.getElementById('admin-active').classList.remove('hidden');
-            document.getElementById('sync-user').textContent = 'ADMINISTRADOR (sin nube)';
+            document.getElementById('debug-btn-home').classList.add('hidden');
+            document.getElementById('sync-user').textContent = 'MODO DEBUG (sin nube)';
             document.getElementById('sync-dot').className = 'w-2 h-2 rounded-full bg-orange-400';
             document.getElementById('sync-pill').classList.remove('hidden');
-            showToast('Modo administrador activo: sin nube, datos solo en este dispositivo');
+            showToast('Modo DEBUG activo: sin Firebase, datos solo en este dispositivo');
         }
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -2058,19 +1791,19 @@
     <!-- Login (Firebase Authentication) -->
     <div id="login-overlay" class="fixed inset-0 bg-slate-900 flex items-center justify-center p-4" style="z-index:100">
         <form id="login-form" class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 space-y-4">
-            <div class="text-center"><i class="fa-solid fa-wrench text-blue-500 text-3xl mb-2"></i><h1 class="text-xl font-bold text-gray-800">Gestor de Taller.</h1><p class="text-sm text-gray-500">Ingresa con tu cuenta del taller</p></div>
+            <div class="text-center"><i class="fa-solid fa-wrench text-blue-500 text-3xl mb-2"></i><h1 class="text-xl font-bold text-gray-800">AutoGestión Pro</h1><p class="text-sm text-gray-500">Ingresa con tu cuenta del taller</p></div>
             <input type="email" id="login-email" required autocomplete="username" placeholder="Correo" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none focus:ring-blue-500">
             <input type="password" id="login-pass" required autocomplete="current-password" placeholder="Contraseña" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm outline-none focus:ring-blue-500">
             <p id="login-error" class="text-sm text-red-600 hidden"></p>
-            <p id="login-info" class="text-sm text-green-700 hidden"></p>
             <button type="submit" id="login-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-md transition">Ingresar</button>
-            <button type="button" id="login-reset" class="w-full text-sm text-blue-600 hover:underline">¿Olvidaste tu contraseña?</button>
         </form>
+    <button type="button" onclick="openDebugPrompt()" class="absolute bottom-2 right-3 text-slate-600 hover:text-slate-300 transition" style="font-size:10px">Modo DEBUG</button>
     </div>
+    <button id="debug-btn-home" type="button" onclick="openDebugPrompt()" class="fixed bottom-1 right-2 text-gray-300 hover:text-gray-500 transition" style="font-size:10px;z-index:30">Modo DEBUG</button>
     <div id="debug-overlay" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center p-4" style="z-index:110">
         <form class="bg-white rounded-2xl shadow-2xl w-full max-w-xs p-5 space-y-3" onsubmit="submitDebug(event)">
-            <h3 class="font-bold text-gray-800"><i class="fa-solid fa-user-shield text-orange-500 mr-1"></i> Login de Administrador</h3>
-            <p class="text-xs text-gray-500">Desconecta la app de la nube: trabajas sin Firebase y los datos quedan solo en este dispositivo. Para volver, toca «Salir».</p>
+            <h3 class="font-bold text-gray-800"><i class="fa-solid fa-bug text-orange-500 mr-1"></i> Modo DEBUG</h3>
+            <p class="text-xs text-gray-500">Trabaja sin conexión y sin Firebase. Los datos quedan solo en este dispositivo.</p>
             <input type="password" id="debug-pass" required autocomplete="off" placeholder="Contraseña" class="w-full rounded-md border-gray-300 border px-3 py-2 text-sm focus:ring-blue-500 outline-none">
             <p id="debug-error" class="text-xs text-red-600 hidden">Contraseña incorrecta.</p>
             <div class="flex justify-end gap-2">
@@ -2086,7 +1819,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, onSnapshot, writeBatch } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
 const app = initializeApp({
@@ -2098,7 +1831,6 @@ const app = initializeApp({
     appId: "1:625069269483:web:63a5ee1ecdb6a7e41339ae"
 });
 const auth = getAuth(app);
-auth.languageCode = 'es';   // los correos de Firebase salen en español
 let fs;
 try { fs = initializeFirestore(app, { localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }) }); }
 catch (e) { console.warn('Sin caché offline:', e); fs = initializeFirestore(app, {}); }
@@ -2176,18 +1908,6 @@ function start() {
             err.classList.remove('hidden');
         }
         btn.disabled = false; btn.textContent = 'Ingresar';
-    });
-    $('login-reset').addEventListener('click', async () => {
-        const err = $('login-error'), info = $('login-info'), email = $('login-email').value.trim();
-        err.classList.add('hidden'); info.classList.add('hidden');
-        const ok = () => { info.textContent = 'Si ese correo está registrado, te enviamos un enlace para crear una contraseña nueva. Revisa también la carpeta de spam.'; info.classList.remove('hidden'); };
-        if (!email) { err.textContent = 'Escribe tu correo arriba y vuelve a tocar "¿Olvidaste tu contraseña?".'; err.classList.remove('hidden'); return; }
-        try { await sendPasswordResetEmail(auth, email); ok(); }
-        catch (ex) {
-            if (ex.code === 'auth/user-not-found') return ok();   // no se revela si el correo existe
-            err.textContent = ex.code === 'auth/network-request-failed' ? 'Sin conexión a internet.' : ex.code === 'auth/too-many-requests' ? 'Demasiados intentos. Espera unos minutos.' : ex.code === 'auth/invalid-email' ? 'Revisa que el correo esté bien escrito.' : 'No se pudo enviar el correo. Intenta de nuevo.';
-            err.classList.remove('hidden');
-        }
     });
     $('logout-btn').addEventListener('click', () => { if (!window.debugMode) signOut(auth); });
     onAuthStateChanged(auth, user => {
